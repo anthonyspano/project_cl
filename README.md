@@ -6,3 +6,4 @@ play with it :).
 
 If you would like to contribute shoot me a message, artists and programmers alike.
 
+<a href="https://imgur.com/vMiS2P5"><img src="https://i.imgur.com/vMiS2P5.gif" title="source: imgur.com" /></a>
