@@ -72,7 +72,7 @@ public class EControl : MonoBehaviour
             canAttack = true;
         }
 
-        if (!isAttacking) 
+        if (!isAttacking)
         {
             Walk();
         }
@@ -122,17 +122,17 @@ public class EControl : MonoBehaviour
 
     void Attack()
     {
-        if (coolDown > 0 && canAttack && isAttacking)
+        if (wait > 0 && canAttack && isAttacking)
         {
             // Charging up attack
-            coolDown -= Time.deltaTime;
+            wait -= Time.deltaTime;
             sr.color = cRed;
             nextAttack = attackRate;
         }
 
         else
-        {             
-            if (canAttack)  
+        {
+            if (canAttack)
                 attackCheck();
 
             sr.color = cGrey;
@@ -212,6 +212,7 @@ public class EControl : MonoBehaviour
 
         Hide();
         isAttacking = false;
+        wait = attackRate;
 
     }
 
