@@ -37,8 +37,8 @@ public class EnemyController : MonoBehaviour
         timer = parryWindow;
         waitToReload = 2.0f;
         firstAttack = 1.0f;
-        nextAttack = firstAttack;
         attackRate = 1.5f;
+        nextAttack = attackRate;
         attackRange = 0.8f;
         healthSystem = new HealthSystem(100);
         healthBar.Setup(healthSystem);
@@ -113,13 +113,11 @@ public class EnemyController : MonoBehaviour
 
     void Attack()
     {
-        //Debug.Log("Time.time: " + Time.time);
-        //Debug.Log("Timer: " + timer);
+        Debug.Log("Time.time: " + Time.time);
+        Debug.Log("Timer: " + timer);
         if (timer < Time.time && canAttack && isAttacking)
         {
-         
             // Counting down / how long the attack takes
-            timer -= Time.deltaTime;
             sr.color = cRed;
             nextAttack = attackRate;
         }
@@ -138,7 +136,7 @@ public class EnemyController : MonoBehaviour
 
             else
             {
-                firstAttack = attackRate;
+                nextAttack = attackRate;
                 timer = Time.time + parryWindow;
             }
         }

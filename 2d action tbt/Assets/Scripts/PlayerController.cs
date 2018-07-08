@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
 
+    // enumerate timer values???
     public float moveSpeed;
     private Vector2 vSpeed;
     private Animator anim;
@@ -13,6 +14,7 @@ public class PlayerController : MonoBehaviour {
     public GameObject strikeS;
     public GameObject strikeE;
     public GameObject strikeW;
+    [SerializeField]
     private float spawnTimer;
     private bool despawning;
     public GameObject enemy;
@@ -25,29 +27,34 @@ public class PlayerController : MonoBehaviour {
     public HealthBar healthBar;
     public HealthSystem healthSystem;
     private bool dealDamage;
-    public EnemyController eControl;
+    //public EnemyController eControl;
+    public EControl eControl;
+    private float attackTimer;
+    [SerializeField]
+    private float attackRate;
+    [SerializeField]
+    private int playerHP;
 
 
 
-    // Use this for initialization
     void Start () {
+        attackTimer = attackRate;
         anim = GetComponent<Animator>();
-        spawnTimer = 2.0f;
         lastMove.y = -1.0f; // start player facing down
         Hide();
-
         enemy = GameObject.FindGameObjectWithTag("enemy");
         e_sr = enemy.GetComponent<SpriteRenderer>();
         eRed = new Color(250f, 0f, 0f);
         rb = GetComponent<Rigidbody2D>();
-        healthSystem = new HealthSystem(100);
+        healthSystem = new HealthSystem(playerHP);
         healthBar.Setup(healthSystem);
     }
-	
-	// Update is called once per frame
+
 	void Update () {
         Walk();
-        Attack();
+        canAttack();
+        if (canAttack())
+            Attack();
           
 
         if (despawning)
@@ -180,7 +187,19 @@ public class PlayerController : MonoBehaviour {
                 //Debug.Log("Seven-sided strike!");
             }
         }
+        attackTimer = attackRate;
     }
 
+    private bool canAttack()
+    {
+        if (attackTimer < 0)
+            return true;
+
+        else
+        {
+            attackTimer -= Time.deltaTime;
+            return false;
+        }
+    }
  
 }

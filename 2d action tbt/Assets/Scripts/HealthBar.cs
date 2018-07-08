@@ -5,7 +5,8 @@ using UnityEngine;
 public class HealthBar : MonoBehaviour {
 
     private HealthSystem healthSystem;
-    public EnemyController eControl;
+    //public EnemyController eControl;
+    public EControl eControl;
 
     public void Setup(HealthSystem healthSystem)
     {
@@ -17,7 +18,7 @@ public class HealthBar : MonoBehaviour {
     {
         transform.Find("Bar").localScale = new Vector3(eControl.healthSystem.GetHealthPercent(), 1, 0); 
 
-        Debug.Log("Health bar object: " + healthSystem.GetHealthPercent());
+        //Debug.Log("Health bar object: " + healthSystem.GetHealthPercent());
         //Debug.Log(transform.Find("Bar").localScale);
     }
 
