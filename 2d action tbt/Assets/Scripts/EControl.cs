@@ -5,59 +5,66 @@ using UnityEngine.SceneManagement;
 
 public class EControl : MonoBehaviour
 {
-
     private bool isMoving;
     public float moveSpeed;
     private Vector3 tPos;
     public GameObject followTarget;
-    private float timer;
-    private float parryWindow;
+    [SerializeField]
+    private float wait;    // wait period before attack (turns red)
+    [SerializeField]
     private bool isAttacking;
-    private bool parry;
     Color cRed;
     Color cGrey;
     public SpriteRenderer sr;
     private bool reloading;
+    [SerializeField]
     private float waitToReload;
-    private float firstAttack;
+    [SerializeField]
+    private float coolDown;  // central timer for attack cooldown
     private bool canAttack;
-    private float nextAttack;
+    [SerializeField]
+    private float nextAttack;   // time before enemy can attack again
+    [SerializeField]
     private float attackRate;
+    [SerializeField]
     private float attackRange;
     public HealthBar healthBar;
     public HealthSystem healthSystem;
-    private bool dealDamage;
     public float dX;
     public float dY;
+    private float distance;
+    private float range;
+    public GameObject strike;
+    public GameObject player;
+    public PlayerController pControl;
+    [SerializeField]
+    private int eHealth;
 
-    // Use this for initialization
+
     void Start()
     {
         sr = GetComponent<SpriteRenderer>();
         cRed = new Color(250f, 0f, 0f);
         cGrey = new Color(0f, 0f, 150f);
-        parryWindow = 4f;
-        timer = parryWindow;
-        waitToReload = 2.0f;
-        firstAttack = 1.0f;
-        nextAttack = firstAttack;
-        attackRate = 1.5f;
-        attackRange = 0.9f;
-        healthSystem = new HealthSystem(100);
+        healthSystem = new HealthSystem(eHealth);
         healthBar.Setup(healthSystem);
-
-        //Random.range for rand
+        Hide();
     }
 
-    // Update is called once per frame
+
     void Update()
     {
+        if (isDead())
+        {
+            Destroy(gameObject);
+        }
+
         dX = transform.position.x - tPos.x;
         dY = transform.position.y - tPos.y;
 
-        if (fAttack())
+        if (attackReady()) // bool coolDown > 0
         {
-            firstAttack -= Time.deltaTime;
+            coolDown -= Time.deltaTime;
         }
 
         else
@@ -65,22 +72,28 @@ public class EControl : MonoBehaviour
             canAttack = true;
         }
 
-        if (!isAttacking) // moving
+        if (!isAttacking) 
         {
             Walk();
         }
 
-
-        if (inRange(dX,dY))
+        if (inRange(dX, dY))
         {
             if (canAttack)
                 Attack();
-            //Debug.Log("Attacking");
         }
 
-        parry = false;
+        else
+        {
+            isAttacking = false;
+        }
 
-        if (reloading)
+        if (nextAttack > 0)
+        {
+            nextAttack -= Time.deltaTime;
+        }
+
+        if (reloading)  // for respawning player
         {
             waitToReload -= Time.deltaTime;
             if (waitToReload < 0)
@@ -89,69 +102,53 @@ public class EControl : MonoBehaviour
             }
         }
 
-        
     }
 
     void Walk()
     {
-        //timeToMoveCounter -= Time.deltaTime;
         tPos = followTarget.transform.position;
-
-
-        if (!inRange(dX,dY))
+        if (!inRange(dX, dY))
         {
             transform.position = Vector2.Lerp(transform.position, tPos, moveSpeed * Time.deltaTime);
-            //Debug.Log("I'm moving");
         }
 
         else
         {
-            
-            //sr.color = cRed;
-            isAttacking = true;
-            if (parry)
-                Parry();
+            if (canAttack)
+                isAttacking = true;
         }
 
     }
 
     void Attack()
     {
-        if (timer > 0 && canAttack && isAttacking)
+        if (coolDown > 0 && canAttack && isAttacking)
         {
-            // Counting down / how long the attack takes
-            timer -= Time.deltaTime;
+            // Charging up attack
+            coolDown -= Time.deltaTime;
             sr.color = cRed;
             nextAttack = attackRate;
         }
 
         else
-        {
-            canAttack = false;
-            //Debug.Log("Done");
-            isAttacking = false;
+        {             
+            if (canAttack)  
+                attackCheck();
+
             sr.color = cGrey;
 
-            if (nextAttack > 0)
-            {
-                nextAttack -= Time.deltaTime;
-            }
-
-            else
-            {
-                firstAttack = attackRate;
-                timer = parryWindow;
-            }
+            coolDown = attackRate;
         }
     }
 
     void OnCollisionEnter2D(Collision2D other)
     {
 
-
         if (other.gameObject.name == "Player1")
         {
-            // Death and respawn
+            // Damage dealt by charging
+            pControl.healthSystem.Damage(25);
+
             //other.gameObject.SetActive(false);
             //reloading = true;
             //StartCoroutine(LoadNewLevel());
@@ -159,21 +156,17 @@ public class EControl : MonoBehaviour
 
     }
 
-    public void Parry()
+    private bool attackReady()
     {
-        Debug.Log("Parry Successful");
-    }
-
-    private bool fAttack()
-    {
-        if (firstAttack > 0)
+        if (coolDown > 0)
         {
             return true;
         }
 
         else
+        {
             return false;
-        
+        }
     }
 
     public bool inRange(float X, float Y)
@@ -185,6 +178,46 @@ public class EControl : MonoBehaviour
 
         else
             return false;
+    }
+
+    private bool isDead()
+    {
+        if (healthSystem.GetHealthPercent() <= 0)
+        {
+            return true;
+        }
+        else
+            return false;
+    }
+
+    private void attackCheck()
+    {
+        Debug.Log("Swing!");
+        canAttack = false;
+        coolDown = attackRate;
+        strike.SetActive(true);
+        float playerWidth = GetComponent<SpriteRenderer>().bounds.size.x / 2f;
+        float boxWidth = strike.GetComponent<SpriteRenderer>().bounds.size.x / 2f;
+
+        range = (strike.transform.position.x - gameObject.transform.position.x) + boxWidth + playerWidth;
+        distance = player.transform.position.x - gameObject.transform.position.x;
+
+        if (distance < range)
+        {
+            //Debug.Log("Hit: " + distance);
+            //Debug.Log("Range: " + range);
+            pControl.healthSystem.Damage(50);
+            Debug.Log("After hit: " + pControl.healthSystem.GetHealthPercent());
+        }
+
+        Hide();
+        isAttacking = false;
+
+    }
+
+    private void Hide()
+    {
+        strike.SetActive(false);
     }
 
 }
