@@ -1,56 +1,73 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class EControl : MonoBehaviour
 {
-    private bool isMoving;
-    public float moveSpeed;
-    private Vector3 tPos;
-    public GameObject followTarget;
+    //private bool isMoving;
+    //public float moveSpeed;
+    //private Vector3 tPos;
+    //public GameObject followTarget;
+    //[SerializeField]
+    //private float wait;    // wait period before attack (turns red)
+    //[SerializeField]
+    //private bool isAttacking;
+    //Color cRed;
+    //Color cGrey;
+    //public SpriteRenderer sr;
+    //[SerializeField]
+    //private float coolDown;  // central timer for attack cooldown
+    //private bool canAttack;
+    //[SerializeField]
+    //private float nextAttack;   // time before enemy can attack again
+    //[SerializeField]
+    //private float attackRate;
+    //[SerializeField]
+    //private float attackRange;
+    //public HealthBar healthBar;
+    //public HealthSystem healthSystem;
+    //public float dX;
+    //public float dY;
+    //private float distance;
+    //private float range;
+    //public GameObject strike;
+    //public GameObject player;
+    //public PlayerController pControl;
+    //[SerializeField]
+    //private int eHealth;
+    //private Vector2 chargePos;
+    //[SerializeField]
+    //private float chargeSpeed;
+    public Enemy enemy;
+    //private enum c_speed { };
     [SerializeField]
-    private float wait;    // wait period before attack (turns red)
-    [SerializeField]
-    private bool isAttacking;
-    Color cRed;
-    Color cGrey;
-    public SpriteRenderer sr;
-    private bool reloading;
-    [SerializeField]
-    private float waitToReload;
-    [SerializeField]
-    private float coolDown;  // central timer for attack cooldown
-    private bool canAttack;
-    [SerializeField]
-    private float nextAttack;   // time before enemy can attack again
-    [SerializeField]
-    private float attackRate;
-    [SerializeField]
-    private float attackRange;
-    public HealthBar healthBar;
-    public HealthSystem healthSystem;
-    public float dX;
-    public float dY;
-    private float distance;
-    private float range;
-    public GameObject strike;
-    public GameObject player;
-    public PlayerController pControl;
-    [SerializeField]
-    private int eHealth;
-
+    private Enemy.moveSpeed c_speed;
+    private Enemy.moveSpeed w_speed;
+    private Enemy.moveSpeed speed;
 
     void Start()
     {
-        sr = GetComponent<SpriteRenderer>();
-        cRed = new Color(250f, 0f, 0f);
-        cGrey = new Color(0f, 0f, 150f);
-        healthSystem = new HealthSystem(eHealth);
-        healthBar.Setup(healthSystem);
+        enemy = new Enemy();
+        enemy.sr = GetComponent<SpriteRenderer>();
+        enemy.cRed = new Color(250f, 0f, 0f);
+        enemy.cGrey = new Color(0f, 0f, 150f);
+        enemy.healthSystem = new HealthSystem(enemy.eHealth);
+        enemy.healthBar.Setup(enemy.healthSystem);
         Hide();
+        c_speed = Enemy.moveSpeed.charge;
+        w_speed = Enemy.moveSpeed.walk;
     }
 
+    float getSpeed()
+    {
+        switch(speed)
+        {
+            case Enemy.moveSpeed.walk: return 2;
+            case Enemy.moveSpeed.charge: return 5;
+        }
+
+        return 0;
+    }
 
     void Update()
     {
@@ -59,85 +76,81 @@ public class EControl : MonoBehaviour
             Destroy(gameObject);
         }
 
-        dX = transform.position.x - tPos.x;
-        dY = transform.position.y - tPos.y;
+        enemy.dX = transform.position.x - enemy.tPos.x;
+        enemy.dY = transform.position.y - enemy.tPos.y;
 
         if (attackReady()) // bool coolDown > 0
         {
-            coolDown -= Time.deltaTime;
+            enemy.coolDown -= Time.deltaTime;
         }
 
         else
         {
-            canAttack = true;
+            enemy.canAttack = true;
         }
 
-        if (!isAttacking)
+        if (!enemy.isAttacking)
         {
             Walk();
         }
 
-        if (inRange(dX, dY))
+        if (inRange(enemy.dX, enemy.dY))
         {
-            if (canAttack)
+            if (enemy.canAttack)
                 Attack();
         }
 
         else
         {
-            isAttacking = false;
+            enemy.isAttacking = false;
         }
 
-        if (nextAttack > 0)
+        if (coolingDown()) // nextAttack > 0
         {
-            nextAttack -= Time.deltaTime;
+            enemy.nextAttack -= Time.deltaTime;
         }
 
-        if (reloading)  // for respawning player
-        {
-            waitToReload -= Time.deltaTime;
-            if (waitToReload < 0)
-            {
-                SceneManager.LoadScene("added_controllers", LoadSceneMode.Single);
-            }
-        }
+        
 
     }
 
     void Walk()
     {
-        tPos = followTarget.transform.position;
-        if (!inRange(dX, dY))
+        enemy.tPos = enemy.followTarget.transform.position; // this line is pretty fucked
+        if (!inRange(enemy.dX, enemy.dY))
         {
-            transform.position = Vector2.Lerp(transform.position, tPos, moveSpeed * Time.deltaTime);
+            transform.position = Vector2.Lerp(transform.position, enemy.tPos, getSpeed() * Time.deltaTime);
         }
 
         else
         {
-            if (canAttack)
-                isAttacking = true;
+            if (enemy.canAttack)
+                enemy.isAttacking = true;
         }
 
     }
 
     void Attack()
     {
-        if (wait > 0 && canAttack && isAttacking)
+        if (enemy.wait > 0 && enemy.canAttack && enemy.isAttacking)
         {
             // Charging up attack
-            wait -= Time.deltaTime;
-            sr.color = cRed;
-            nextAttack = attackRate;
+            enemy.wait -= Time.deltaTime;
+            enemy.sr.color = enemy.cRed;
+            enemy.nextAttack = enemy.attackRate;
         }
 
         else
         {
-            if (canAttack)
-                attackCheck();
+            if (enemy.canAttack)
+            {
+                //attackCheck();    // for striking enemy types
+                charge(enemy.tPos, c_speed);     // for charging enemy types
+            }
 
-            sr.color = cGrey;
+            enemy.sr.color = enemy.cGrey;
 
-            coolDown = attackRate;
+            enemy.coolDown = enemy.attackRate;
         }
     }
 
@@ -147,7 +160,7 @@ public class EControl : MonoBehaviour
         if (other.gameObject.name == "Player1")
         {
             // Damage dealt by charging
-            pControl.healthSystem.Damage(25);
+            enemy.pControl.healthSystem.Damage(25);
 
             //other.gameObject.SetActive(false);
             //reloading = true;
@@ -158,7 +171,7 @@ public class EControl : MonoBehaviour
 
     private bool attackReady()
     {
-        if (coolDown > 0)
+        if (enemy.coolDown > 0)
         {
             return true;
         }
@@ -171,7 +184,7 @@ public class EControl : MonoBehaviour
 
     public bool inRange(float X, float Y)
     {
-        if (X * X + Y * Y < attackRange)
+        if (X * X + Y * Y < enemy.attackRange)
         {
             return true;
         }
@@ -182,7 +195,7 @@ public class EControl : MonoBehaviour
 
     private bool isDead()
     {
-        if (healthSystem.GetHealthPercent() <= 0)
+        if (enemy.healthSystem.GetHealthPercent() <= 0)
         {
             return true;
         }
@@ -192,33 +205,51 @@ public class EControl : MonoBehaviour
 
     private void attackCheck()
     {
-        Debug.Log("Swing!");
-        canAttack = false;
-        coolDown = attackRate;
-        strike.SetActive(true);
+        enemy.canAttack = false;
+        enemy.coolDown = enemy.attackRate;
+        enemy.strike.SetActive(true);
         float playerWidth = GetComponent<SpriteRenderer>().bounds.size.x / 2f;
-        float boxWidth = strike.GetComponent<SpriteRenderer>().bounds.size.x / 2f;
+        float boxWidth = enemy.strike.GetComponent<SpriteRenderer>().bounds.size.x / 2f;
 
-        range = (strike.transform.position.x - gameObject.transform.position.x) + boxWidth + playerWidth;
-        distance = player.transform.position.x - gameObject.transform.position.x;
+        enemy.range = (enemy.strike.transform.position.x - gameObject.transform.position.x) + boxWidth + playerWidth;
+        enemy.distance = enemy.player.transform.position.x - gameObject.transform.position.x;
 
-        if (distance < range)
+        if (enemy.distance < enemy.range)
         {
             //Debug.Log("Hit: " + distance);
             //Debug.Log("Range: " + range);
-            pControl.healthSystem.Damage(50);
-            Debug.Log("After hit: " + pControl.healthSystem.GetHealthPercent());
+            enemy.pControl.healthSystem.Damage(50);
+            Debug.Log("After hit: " + enemy.pControl.healthSystem.GetHealthPercent());
         }
 
         Hide();
-        isAttacking = false;
-        wait = attackRate;
+        enemy.isAttacking = false;
+        enemy.wait = enemy.attackRate;
 
     }
 
     private void Hide()
     {
-        strike.SetActive(false);
+        enemy.strike.SetActive(false);
     }
 
+    private bool coolingDown()
+    {
+        if (enemy.nextAttack > 0)
+            return true;
+        else
+            return false;
+    }
+
+    private void charge(Vector3 chargePos, Enemy.moveSpeed speed) // charge through player
+    {
+        enemy.canAttack = false;
+        enemy.coolDown = enemy.attackRate;
+        // Charging the player
+        transform.position = Vector2.Lerp(transform.position, chargePos, getSpeed());
+
+
+        enemy.isAttacking = false;
+        enemy.wait = enemy.attackRate;     
+    }
 }

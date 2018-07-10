@@ -3,7 +3,16 @@ guid: 7b88bac8fe83a244792b11d0adb20f8d
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - followTarget: {fileID: 1616521351128218, guid: 4e655ba03a7f04d49bc0e3b39e1f5519,
+      type: 2}
+  - sr: {fileID: 212082197858444694, guid: 157992adcbb07d448984c3c256826d31, type: 2}
+  - healthBar: {fileID: 114778617043488098, guid: 157992adcbb07d448984c3c256826d31,
+      type: 2}
+  - strike: {fileID: 1855802573818290, guid: 157992adcbb07d448984c3c256826d31, type: 2}
+  - player: {fileID: 1616521351128218, guid: 4e655ba03a7f04d49bc0e3b39e1f5519, type: 2}
+  - pControl: {fileID: 114072736515768440, guid: 4e655ba03a7f04d49bc0e3b39e1f5519,
+      type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

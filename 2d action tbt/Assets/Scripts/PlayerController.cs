@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour {
 
@@ -16,7 +17,6 @@ public class PlayerController : MonoBehaviour {
     public GameObject strikeW;
     [SerializeField]
     private float spawnTimer;
-    private bool despawning;
     public GameObject enemy;
     public float range;
     public float distance;
@@ -26,7 +26,6 @@ public class PlayerController : MonoBehaviour {
     public Rigidbody2D rb;
     public HealthBar healthBar;
     public HealthSystem healthSystem;
-    private bool dealDamage;
     //public EnemyController eControl;
     public EControl eControl;
     private float attackTimer;
@@ -34,6 +33,12 @@ public class PlayerController : MonoBehaviour {
     private float attackRate;
     [SerializeField]
     private int playerHP;
+    private bool reloading;
+    [SerializeField]
+    private float waitToReload;
+    public enum moving { walk, run };
+    public moving walking;
+    private Enemy e_class;
 
 
 
@@ -55,16 +60,18 @@ public class PlayerController : MonoBehaviour {
         canAttack();
         if (canAttack())
             Attack();
-          
 
-        if (despawning)
+
+        if (reloading)  // for respawning player
         {
-            spawnTimer -= Time.deltaTime;
-            if (spawnTimer < 0)
+            waitToReload -= Time.deltaTime;
+            if (waitToReload < 0)
             {
-                //Destroy(strike);
+                SceneManager.LoadScene("world_map", LoadSceneMode.Single);
             }
         }
+
+        playerDeath();
         
 	}
 
@@ -173,10 +180,8 @@ public class PlayerController : MonoBehaviour {
         {
             //Debug.Log("Hit: " + distance);
             //Debug.Log("Range: " + range);
-            //dealDamage = true;
-            Debug.Log("Before hit: " + eControl.healthSystem.GetHealthPercent());
-            eControl.healthSystem.Damage(20);
-            Debug.Log("After hit: " + eControl.healthSystem.GetHealthPercent());
+            e_class.healthSystem.Damage(20);
+            Debug.Log("After hit: " + e_class.healthSystem.GetHealthPercent());
             //Debug.Log(eControl.healthSystem.)
 
 
@@ -201,5 +206,22 @@ public class PlayerController : MonoBehaviour {
             return false;
         }
     }
- 
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "enemy")
+        {
+            healthSystem.Damage(25);
+            Debug.Log("Health: " + healthSystem.GetHealth());
+        }
+    }
+
+    private void playerDeath()
+    {
+        if (healthSystem.GetHealth() == 0)
+        {
+            reloading = true;
+        }
+    }
+
 }

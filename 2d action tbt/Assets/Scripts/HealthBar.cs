@@ -6,7 +6,7 @@ public class HealthBar : MonoBehaviour {
 
     private HealthSystem healthSystem;
     //public EnemyController eControl;
-    public EControl eControl;
+    public Enemy enemy;
 
     public void Setup(HealthSystem healthSystem)
     {
@@ -16,7 +16,7 @@ public class HealthBar : MonoBehaviour {
 
     private void HealthSystem_OnHealthChanged(object sender, System.EventArgs e)
     {
-        transform.Find("Bar").localScale = new Vector3(eControl.healthSystem.GetHealthPercent(), 1, 0); 
+        transform.Find("Bar").localScale = new Vector3(enemy.healthSystem.GetHealthPercent(), 1, 0); 
 
         //Debug.Log("Health bar object: " + healthSystem.GetHealthPercent());
         //Debug.Log(transform.Find("Bar").localScale);
