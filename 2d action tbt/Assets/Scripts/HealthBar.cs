@@ -11,7 +11,7 @@ public class HealthBar : MonoBehaviour {
     public void Setup(HealthSystem healthSystem)
     {
         this.healthSystem = healthSystem;
-        healthSystem.OnHealthChanged += HealthSystem_OnHealthChanged; // EventHandler
+        healthSystem.OnHealthChanged += HealthSystem_OnHealthChanged; // Event in the health system
     }
 
     private void HealthSystem_OnHealthChanged(object sender, System.EventArgs e)

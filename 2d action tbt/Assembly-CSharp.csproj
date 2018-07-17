@@ -60,12 +60,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\2D Fantasy Character Pack\animate.cs" />
+    <Compile Include="Assets\Scripts\AcolyteControl.cs" />
     <Compile Include="Assets\Scripts\CameraController.cs" />
     <Compile Include="Assets\Scripts\ChangeLevel.cs" />
-    <Compile Include="Assets\Scripts\EControl.cs" />
+    <Compile Include="Assets\Scripts\Enem.cs" />
     <Compile Include="Assets\Scripts\Enemy.cs" />
     <Compile Include="Assets\Scripts\EnemyController.cs" />
     <Compile Include="Assets\Scripts\EnemyDeath.cs" />
+    <Compile Include="Assets\Scripts\EnemySpawn.cs" />
     <Compile Include="Assets\Scripts\GameHandler.cs" />
     <Compile Include="Assets\Scripts\HealthBar.cs" />
     <Compile Include="Assets\Scripts\HealthSystem.cs" />
