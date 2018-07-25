@@ -25,7 +25,6 @@ GameObject:
   - component: {fileID: 212082197858444694}
   - component: {fileID: 114532513735330582}
   - component: {fileID: 114463432602092144}
-  - component: {fileID: 114850975635567214}
   m_Layer: 0
   m_Name: badguy 1
   m_TagString: enemy
@@ -276,6 +275,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0627333c7a71c6b41b8231d1861b997f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sr: {fileID: 212082197858444694}
+  strike: {fileID: 1855802573818290}
+  player: {fileID: 1806897229182554, guid: 4e655ba03a7f04d49bc0e3b39e1f5519, type: 2}
   c_speed: 0
 --- !u!114 &114778617043488098
 MonoBehaviour:
@@ -288,43 +290,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 495d9ee05454b134ab0de0c2009f4707, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemy: {fileID: 0}
---- !u!114 &114850975635567214
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1230298909467838}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b88bac8fe83a244792b11d0adb20f8d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  movement: 0
-  isMoving: 0
-  tPos: {x: 0, y: 0, z: 0}
-  followTarget: {fileID: 1806897229182554, guid: 4e655ba03a7f04d49bc0e3b39e1f5519,
-    type: 2}
-  wait: 2
-  isAttacking: 0
-  cRed: {r: 0.2784314, g: 0.2784314, b: 0.2784314, a: 0}
-  cGrey: {r: 0, g: 0, b: 0, a: 0}
-  sr: {fileID: 212082197858444694}
-  coolDown: 2
-  canAttack: 0
-  nextAttack: 2
-  attackRate: 2
-  attackRange: 2
-  healthBar: {fileID: 114778617043488098}
-  dX: 0
-  dY: 0
-  distance: 0
-  range: 0
-  strike: {fileID: 1855802573818290}
-  player: {fileID: 1806897229182554, guid: 4e655ba03a7f04d49bc0e3b39e1f5519, type: 2}
-  pControl: {fileID: 114558786343924764, guid: 4e655ba03a7f04d49bc0e3b39e1f5519, type: 2}
-  eHealth: 100
-  chargePos: {x: 0, y: 0}
 --- !u!212 &212082197858444694
 SpriteRenderer:
   m_ObjectHideFlags: 1

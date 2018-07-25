@@ -1,5 +1,6 @@
 ﻿using System;
 
+// Health system
 public class HealthSystem
 {
     public int healthMax;

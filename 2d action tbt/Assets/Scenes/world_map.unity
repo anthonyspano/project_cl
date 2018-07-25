@@ -113,59 +113,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1001 &165403802
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4670497389060086, guid: 157992adcbb07d448984c3c256826d31, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 6.538107
-      objectReference: {fileID: 0}
-    - target: {fileID: 4670497389060086, guid: 157992adcbb07d448984c3c256826d31, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: -2.2916203
-      objectReference: {fileID: 0}
-    - target: {fileID: 4670497389060086, guid: 157992adcbb07d448984c3c256826d31, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4670497389060086, guid: 157992adcbb07d448984c3c256826d31, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4670497389060086, guid: 157992adcbb07d448984c3c256826d31, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4670497389060086, guid: 157992adcbb07d448984c3c256826d31, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4670497389060086, guid: 157992adcbb07d448984c3c256826d31, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4670497389060086, guid: 157992adcbb07d448984c3c256826d31, type: 2}
-      propertyPath: m_RootOrder
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114850975635567214, guid: 157992adcbb07d448984c3c256826d31,
-        type: 2}
-      propertyPath: strike
-      value: 
-      objectReference: {fileID: 1855802573818290, guid: 157992adcbb07d448984c3c256826d31,
-        type: 2}
-    - target: {fileID: 114850975635567214, guid: 157992adcbb07d448984c3c256826d31,
-        type: 2}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: 157992adcbb07d448984c3c256826d31, type: 2}
-  m_IsPrefabParent: 0
 --- !u!1001 &499092425
 Prefab:
   m_ObjectHideFlags: 0
@@ -203,7 +150,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4264806972336330, guid: 92ea674f44fdcb54abf9709040e2e44c, type: 2}
       propertyPath: m_RootOrder
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 61757651764213452, guid: 92ea674f44fdcb54abf9709040e2e44c,
         type: 2}
@@ -213,6 +160,11 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 92ea674f44fdcb54abf9709040e2e44c, type: 2}
   m_IsPrefabParent: 0
+--- !u!1 &564164903 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1171096261175590, guid: 4e655ba03a7f04d49bc0e3b39e1f5519,
+    type: 2}
+  m_PrefabInternal: {fileID: 1075634581}
 --- !u!1 &706389244
 GameObject:
   m_ObjectHideFlags: 0
@@ -252,8 +204,19 @@ Transform:
   m_Children:
   - {fileID: 2011402437}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &775479265 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1806897229182554, guid: 4e655ba03a7f04d49bc0e3b39e1f5519,
+    type: 2}
+  m_PrefabInternal: {fileID: 1075634581}
+--- !u!114 &775479270 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 114558786343924764, guid: 4e655ba03a7f04d49bc0e3b39e1f5519,
+    type: 2}
+  m_PrefabInternal: {fileID: 1075634581}
+  m_Script: {fileID: 11500000, guid: 3b53a7798d0272345a3a576e62b08bb5, type: 3}
 --- !u!1001 &1075634581
 Prefab:
   m_ObjectHideFlags: 0
@@ -291,7 +254,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4141341366358664, guid: 4e655ba03a7f04d49bc0e3b39e1f5519, type: 2}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114558786343924764, guid: 4e655ba03a7f04d49bc0e3b39e1f5519,
         type: 2}
@@ -313,6 +276,16 @@ Prefab:
       propertyPath: eControl
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 114558786343924764, guid: 4e655ba03a7f04d49bc0e3b39e1f5519,
+        type: 2}
+      propertyPath: enemyHealth
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114558786343924764, guid: 4e655ba03a7f04d49bc0e3b39e1f5519,
+        type: 2}
+      propertyPath: playerHP
+      value: 25
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 4e655ba03a7f04d49bc0e3b39e1f5519, type: 2}
   m_IsPrefabParent: 0
@@ -325,6 +298,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1260477788}
   - component: {fileID: 1260477787}
+  - component: {fileID: 1260477789}
   m_Layer: 0
   m_Name: Control
   m_TagString: Untagged
@@ -343,7 +317,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daa3ade7a2b9bd1469b14fe879243e0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthBar: {fileID: 0}
 --- !u!4 &1260477788
 Transform:
   m_ObjectHideFlags: 0
@@ -357,6 +330,42 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1260477789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1260477786}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aabb78c9ebd8df145a3cf9c01fe68d67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isMoving: 0
+  tPos: {x: 0, y: 0, z: 0}
+  followTarget: {fileID: 0}
+  wait: 0
+  isAttacking: 0
+  cRed: {r: 0, g: 0, b: 0, a: 0}
+  cGrey: {r: 0, g: 0, b: 0, a: 0}
+  sr: {fileID: 0}
+  coolDown: 0
+  canAttack: 0
+  nextAttack: 0
+  attackRate: 0
+  attackRange: 0
+  healthBar: {fileID: 0}
+  dX: 0
+  dY: 0
+  distance: 0
+  range: 0
+  strike: {fileID: 564164903}
+  player: {fileID: 775479265}
+  pControl: {fileID: 775479270}
+  eHealth: 0
+  chargePos: {x: 0, y: 0}
+  pfHealthBar: {fileID: 4665382496490782, guid: 157992adcbb07d448984c3c256826d31,
+    type: 2}
 --- !u!1 &2011402436
 GameObject:
   m_ObjectHideFlags: 0

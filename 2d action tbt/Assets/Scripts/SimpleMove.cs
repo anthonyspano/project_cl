@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+// Used for testing
 public class SimpleMove : MonoBehaviour
 {
 

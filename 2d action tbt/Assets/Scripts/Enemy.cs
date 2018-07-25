@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
+// Base class for all enemies
 public class Enemy<T> where T : Enemy
 {
     public GameObject GameObject;
@@ -58,18 +58,34 @@ public abstract class Enemy : MonoBehaviour
     private void Awake()
     {
         // Instantiating all components of the game object
-        sr = gameObject.AddComponent<SpriteRenderer>();
-        sr.sprite = Resources.Load<Sprite>("badguy");
+        LoadSprite();
+        
         gameObject.tag = "enemy";
         gameObject.layer = LayerMask.NameToLayer("Characters");
-        bc = gameObject.AddComponent<BoxCollider2D>();
+        gameObject.AddComponent<BoxCollider2D>();
         gameObject.AddComponent<Animator>();
-        anim = gameObject.GetComponent<Animator>();
-        anim.runtimeAnimatorController = blank; // find the controller in the asset library
+        //anim.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("hood32_idle_0");  // find the controller in the asset library
     }
 
+    private bool LoadSprite()
+    {
+        sr = gameObject.AddComponent<SpriteRenderer>();
+        sr.sprite = Resources.Load<Sprite>("Sprites/Enemies/badguy");
+        if (Resources.Load<Sprite>("Sprites/Enemies/badguy"))
+        {
+            Debug.Log("Sprite loaded successfully!");
+            return true;
+        }
+           
+        else
+        {
+            Debug.Log("Sprite load failed!");
+            return false;
+        }
+            
+    }
 
-    public virtual void Initialize(Vector2 position)
+    public virtual void Initialize(Vector3 position)
     {
         transform.position = position;
     }
@@ -78,6 +94,7 @@ public abstract class Enemy : MonoBehaviour
 }
 
 public class Acolyte : Enemy {
+
 
     public float Cooldown
     {

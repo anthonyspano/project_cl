@@ -2,53 +2,51 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Behavior script for acolyte enemies
 public class AcolyteControl : MonoBehaviour
 {
-    //private bool isMoving;
-    //public float moveSpeed;
+    private bool isMoving;
     //private Vector3 tPos;
     //public GameObject followTarget;
     //[SerializeField]
-    //private float wait;    // wait period before attack (turns red)
+    private float wait;    // wait period before attack (turns red)
     //[SerializeField]
-    //private bool isAttacking;
-    //Color cRed;
-    //Color cGrey;
-    //public SpriteRenderer sr;
+    private bool isAttacking;
+    [SerializeField]
+    private SpriteRenderer sr;
     //[SerializeField]
-    //private float coolDown;  // central timer for attack cooldown
-    //private bool canAttack;
+    private float coolDown;  // central timer for attack cooldown
+    private bool canAttack;
     //[SerializeField]
-    //private float nextAttack;   // time before enemy can attack again
+    private float nextAttack;   // time before enemy can attack again
     //[SerializeField]
     //private float attackRate;
     //[SerializeField]
     //private float attackRange;
     //public HealthBar healthBar;
     //public HealthSystem healthSystem;
-    //public float dX;
-    //public float dY;
-    //private float distance;
-    //private float range;
-    //public GameObject strike;
-    //public GameObject player;
+    private float dX;
+    private float dY;
+    private float distance;
+    private float range;
+    public GameObject strike;
+    public GameObject player;
     //public PlayerController pControl;
     //[SerializeField]
     //private int eHealth;
     //private Vector2 chargePos;
-    //[SerializeField]
-    //private float chargeSpeed;
     private Acolyte enemy;
     //private enum c_speed { };
     [SerializeField]
     private Enemy.moveSpeed c_speed;
     private Enemy.moveSpeed w_speed;
     private Enemy.moveSpeed speed;
+    private Enemy test;
 
     void Start()
     {
         enemy = new Acolyte();
-        enemy.sr = GetComponent<SpriteRenderer>();
+        sr = GetComponent<SpriteRenderer>();
         enemy.cRed = new Color(250f, 0f, 0f);
         enemy.cGrey = new Color(0f, 0f, 150f);
         enemy.healthSystem = new HealthSystem(enemy.eHealth);
@@ -71,13 +69,16 @@ public class AcolyteControl : MonoBehaviour
 
     void Update()
     {
+        enemy.followTarget = player;
+        enemy.tPos = enemy.followTarget.transform.position;
+
         if (isDead())
         {
             Destroy(gameObject);
         }
 
-        enemy.dX = transform.position.x - enemy.tPos.x;
-        enemy.dY = transform.position.y - enemy.tPos.y;
+        dX = transform.position.x - player.transform.position.x;
+        dY = transform.position.y - player.transform.position.y;
 
         if (attackReady()) // bool coolDown > 0
         {
@@ -86,28 +87,28 @@ public class AcolyteControl : MonoBehaviour
 
         else
         {
-            enemy.canAttack = true;
+            canAttack = true;
         }
 
-        if (!enemy.isAttacking)
+        if (!isAttacking)
         {
             Walk();
         }
 
-        if (inRange(enemy.dX, enemy.dY))
+        if (inRange(dX, dY))
         {
-            if (enemy.canAttack)
+            if (canAttack)
                 Attack();
         }
 
         else
         {
-            enemy.isAttacking = false;
+            isAttacking = false;
         }
 
         if (coolingDown()) // nextAttack > 0
         {
-            enemy.nextAttack -= Time.deltaTime;
+            nextAttack -= Time.deltaTime;
         }
 
         
@@ -119,40 +120,40 @@ public class AcolyteControl : MonoBehaviour
         // enemy.tPos -> Vector 3 in enemy script
         // enemy.followTarget.transform.position -> enemy(script).player(gameobject).position -> position of player
         //enemy.tPos = enemy.followTarget.transform.position; // this line is fucked
-        if (!inRange(enemy.dX, enemy.dY))
+        if (!inRange(dX, dY))
         {
             transform.position = Vector2.Lerp(transform.position, enemy.tPos, getSpeed() * Time.deltaTime);
         }
 
         else
         {
-            if (enemy.canAttack)
-                enemy.isAttacking = true;
+            if (canAttack)
+                isAttacking = true;
         }
 
     }
 
     void Attack()
     {
-        if (enemy.wait > 0 && enemy.canAttack && enemy.isAttacking)
+        if (wait > 0 && canAttack && isAttacking)
         {
             // Charging up attack
-            enemy.wait -= Time.deltaTime;
-            enemy.sr.color = enemy.cRed;
-            enemy.nextAttack = enemy.attackRate;
+            wait -= Time.deltaTime;
+            sr.color = enemy.cRed;
+            nextAttack = enemy.attackRate;
         }
 
         else
         {
-            if (enemy.canAttack)
+            if (canAttack)
             {
                 //attackCheck();    // for striking enemy types
                 charge(enemy.tPos, c_speed);     // for charging enemy types
             }
 
-            enemy.sr.color = enemy.cGrey;
+            sr.color = enemy.cGrey;
 
-            enemy.coolDown = enemy.attackRate;
+            coolDown = enemy.attackRate;
         }
     }
 
@@ -173,7 +174,7 @@ public class AcolyteControl : MonoBehaviour
 
     private bool attackReady()
     {
-        if (enemy.coolDown > 0)
+        if (coolDown > 0)
         {
             return true;
         }
@@ -207,16 +208,16 @@ public class AcolyteControl : MonoBehaviour
 
     private void attackCheck()
     {
-        enemy.canAttack = false;
-        enemy.coolDown = enemy.attackRate;
-        enemy.strike.SetActive(true);
+        canAttack = false;
+        coolDown = enemy.attackRate;
+        strike.SetActive(true);
         float playerWidth = GetComponent<SpriteRenderer>().bounds.size.x / 2f;
-        float boxWidth = enemy.strike.GetComponent<SpriteRenderer>().bounds.size.x / 2f;
+        float boxWidth = strike.GetComponent<SpriteRenderer>().bounds.size.x / 2f;
 
-        enemy.range = (enemy.strike.transform.position.x - gameObject.transform.position.x) + boxWidth + playerWidth;
-        enemy.distance = enemy.player.transform.position.x - gameObject.transform.position.x;
+        range = (strike.transform.position.x - gameObject.transform.position.x) + boxWidth + playerWidth;
+        distance = player.transform.position.x - gameObject.transform.position.x;
 
-        if (enemy.distance < enemy.range)
+        if (distance < range)
         {
             //Debug.Log("Hit: " + distance);
             //Debug.Log("Range: " + range);
@@ -225,19 +226,19 @@ public class AcolyteControl : MonoBehaviour
         }
 
         Hide();
-        enemy.isAttacking = false;
-        enemy.wait = enemy.attackRate;
+        isAttacking = false;
+        wait = enemy.attackRate;
 
     }
 
     private void Hide()
     {
-        enemy.strike.SetActive(false);
+        strike.SetActive(false);
     }
 
     private bool coolingDown()
     {
-        if (enemy.nextAttack > 0)
+        if (nextAttack > 0)
             return true;
         else
             return false;
@@ -245,13 +246,13 @@ public class AcolyteControl : MonoBehaviour
 
     private void charge(Vector3 chargePos, Enemy.moveSpeed speed) // charge through player
     {
-        enemy.canAttack = false;
-        enemy.coolDown = enemy.attackRate;
+        canAttack = false;
+        coolDown = enemy.attackRate;
         // Charging the player
         transform.position = Vector2.Lerp(transform.position, chargePos, getSpeed());
 
 
-        enemy.isAttacking = false;
-        enemy.wait = enemy.attackRate;     
+        isAttacking = false;
+        wait = enemy.attackRate;     
     }
 }

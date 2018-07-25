@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+// Handles movement of player
 public class PlayerController : MonoBehaviour {
 
     // enumerate timer values???
@@ -27,7 +28,7 @@ public class PlayerController : MonoBehaviour {
     public HealthBar healthBar;
     public HealthSystem healthSystem;
     //public EnemyController eControl;
-    public EControl eControl;
+    public AcolyteControl eControl;
     private float attackTimer;
     [SerializeField]
     private float attackRate;
@@ -38,21 +39,28 @@ public class PlayerController : MonoBehaviour {
     private float waitToReload;
     public enum moving { walk, run };
     public moving walking;
+    [SerializeField]
     private Enemy e_class;
-
+    public HealthBar enemyHealth;
+    private GameObject[] enemies;
+    [SerializeField]
+    private int boostSpeed;
 
 
     void Start () {
+        //enemies = GameObject.FindGameObjectsWithTag("enemy");
+        enemy = GameObject.Find("badguy");
         attackTimer = attackRate;
         anim = GetComponent<Animator>();
         lastMove.y = -1.0f; // start player facing down
         Hide();
-        enemy = GameObject.FindGameObjectWithTag("enemy");
+        //enemy = GameObject.FindGameObjectWithTag("enemy");
         e_sr = enemy.GetComponent<SpriteRenderer>();
         eRed = new Color(250f, 0f, 0f);
         rb = GetComponent<Rigidbody2D>();
         healthSystem = new HealthSystem(playerHP);
         healthBar.Setup(healthSystem);
+        enemyHealth = enemy.GetComponent<HealthBar>();
     }
 
 	void Update () {
@@ -71,7 +79,7 @@ public class PlayerController : MonoBehaviour {
             }
         }
 
-        playerDeath();
+        //playerDeath();
         
 	}
 
@@ -144,23 +152,26 @@ public class PlayerController : MonoBehaviour {
             {
                 StartCoroutine(AttackDir(strikeW));
                 AttackCheck(strikeW);
+                AttackMotion(-1, 0);
             }
             else if (lastMove.x == 1f)
             {
                 StartCoroutine(AttackDir(strikeE));
                 AttackCheck(strikeE);
+                AttackMotion(1, 0);
             }
             else if (lastMove.y == 1f)
             {
                 StartCoroutine(AttackDir(strikeN));
                 AttackCheck(strikeN);
+                AttackMotion(0, 1);
             }
             else
             {
                 attackingDown = true;
                 StartCoroutine(AttackDir(strikeS));
                 AttackCheck(strikeS);
-                
+                AttackMotion(0, -1);
             }
         }
     }
@@ -180,7 +191,9 @@ public class PlayerController : MonoBehaviour {
         {
             //Debug.Log("Hit: " + distance);
             //Debug.Log("Range: " + range);
-            e_class.healthSystem.Damage(20);
+            // enemyHealth = enemy.GetComponent<HealthBar>();
+            enemyHealth.healthSystem.Damage(20);
+          
             Debug.Log("After hit: " + e_class.healthSystem.GetHealthPercent());
             //Debug.Log(eControl.healthSystem.)
 
@@ -216,12 +229,23 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
-    private void playerDeath()
+    private void AttackMotion(int x, int y)
     {
-        if (healthSystem.GetHealth() == 0)
-        {
-            reloading = true;
-        }
+        // sudden forward motion when attacking; 20 seems like a good number
+        int boostX = x * boostSpeed;
+        int boostY = y * boostSpeed;
+        rb.velocity = new Vector2(boostX, boostY);
+        
+
+
     }
+
+    //private void playerDeath()
+    //{
+    //    if (healthSystem.GetHealth() == 0)
+    //    {
+    //        reloading = true;
+    //    }
+    //}
 
 }

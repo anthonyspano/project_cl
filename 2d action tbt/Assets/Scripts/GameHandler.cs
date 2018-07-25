@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Management of the game states and storage
+// Changing levels and saving/loading
 public class GameHandler : MonoBehaviour {
 
-    public HealthBar healthBar;
     private GameObject badguy;
     private GameObject clone;
-    private Transform enemySpawn;
 
 	private void Start ()
     {
-        HealthSystem healthSystem = new HealthSystem(100);
-        healthBar.Setup(healthSystem);
+        
 
         Spawn();
         //enemySpawn = new Transform(5, 5);
@@ -33,7 +32,8 @@ public class GameHandler : MonoBehaviour {
 
     private void Spawn()
     {
-        clone = Instantiate(badguy, enemySpawn);
+        // doesn't work
+        //clone = Instantiate(badguy, enemySpawn);
 
 
     }
