@@ -128,7 +128,8 @@ public class PlayerController : MonoBehaviour {
         strike.SetActive(true);
         yield return new WaitForSeconds(0.3f);
         strike.SetActive(false);
-        // strike downward
+        // TODO: implement animations for other directions
+        // strike downward animation
         attackingDown = false;
 
 
@@ -150,27 +151,29 @@ public class PlayerController : MonoBehaviour {
         {
             if (lastMove.x == -1f)
             {
+                // Spawn hitbox
                 StartCoroutine(AttackDir(strikeW));
-                AttackCheck(strikeW);
+                //AttackCheck(strikeW);
+                // Adds dash to attack
                 AttackMotion(-1, 0);
             }
             else if (lastMove.x == 1f)
             {
                 StartCoroutine(AttackDir(strikeE));
-                AttackCheck(strikeE);
+                //AttackCheck(strikeE);
                 AttackMotion(1, 0);
             }
             else if (lastMove.y == 1f)
             {
                 StartCoroutine(AttackDir(strikeN));
-                AttackCheck(strikeN);
+                //AttackCheck(strikeN);
                 AttackMotion(0, 1);
             }
             else
             {
                 attackingDown = true;
                 StartCoroutine(AttackDir(strikeS));
-                AttackCheck(strikeS);
+                //AttackCheck(strikeS);
                 AttackMotion(0, -1);
             }
         }
@@ -191,10 +194,10 @@ public class PlayerController : MonoBehaviour {
         {
             //Debug.Log("Hit: " + distance);
             //Debug.Log("Range: " + range);
-            // enemyHealth = enemy.GetComponent<HealthBar>();
-            enemyHealth.healthSystem.Damage(20);
+            
+            //enemyHealth.healthSystem.Damage(20);
           
-            Debug.Log("After hit: " + e_class.healthSystem.GetHealthPercent());
+            //Debug.Log("After hit: " + e_class.healthSystem.GetHealthPercent());
             //Debug.Log(eControl.healthSystem.)
 
 

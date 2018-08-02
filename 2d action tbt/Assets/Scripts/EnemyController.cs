@@ -164,12 +164,7 @@ public class EnemyController : MonoBehaviour
 
     private bool isDead()
     {
-        if (healthSystem.GetHealthPercent() <= 0)
-        {
-            return true;
-        }
-        else
-            return false;
+        return healthSystem.GetHealthPercent() <= 0 ? true : false;
     }
 
 }

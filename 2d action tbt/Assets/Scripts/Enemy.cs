@@ -22,7 +22,6 @@ public abstract class Enemy : MonoBehaviour
     public bool isMoving;
     //public float moveSpeed;
     public Vector3 tPos;
-    public GameObject followTarget;
     [SerializeField]
     public float wait;    // wait period before attack (turns red)
     [SerializeField]
@@ -54,6 +53,7 @@ public abstract class Enemy : MonoBehaviour
     private BoxCollider2D bc;
     private Animator anim;
     private RuntimeAnimatorController blank; // how to get animator controller ?
+
 
     private void Awake()
     {
@@ -94,7 +94,6 @@ public abstract class Enemy : MonoBehaviour
 }
 
 public class Acolyte : Enemy {
-
 
     public float Cooldown
     {

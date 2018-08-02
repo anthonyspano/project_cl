@@ -3,21 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Behavior script for acolyte enemies
+/* Known issues
+ * Lerp accelerates enemy toward player. Find alternative.
+ * Always following
+ * Never in range?
+ * Check all inherited values?
+ * */
 public class AcolyteControl : MonoBehaviour
 {
     private bool isMoving;
+    private bool canAttack;
     //private Vector3 tPos;
-    //public GameObject followTarget;
-    //[SerializeField]
-    private float wait;    // wait period before attack (turns red)
+    public GameObject followTarget;
     //[SerializeField]
     private bool isAttacking;
     [SerializeField]
     private SpriteRenderer sr;
-    //[SerializeField]
-    private float coolDown;  // central timer for attack cooldown
-    private bool canAttack;
-    //[SerializeField]
+    // Object-specific timers
+    [SerializeField]
+    private float wait;    // wait period before attack (turns red)
+    [SerializeField]
+    private float coolDown;  // central timer for attack cooldown  
+    [SerializeField]
     private float nextAttack;   // time before enemy can attack again
     //[SerializeField]
     //private float attackRate;
@@ -35,7 +42,7 @@ public class AcolyteControl : MonoBehaviour
     //[SerializeField]
     //private int eHealth;
     //private Vector2 chargePos;
-    private Acolyte enemy;
+    private Acolyte acolyte;
     //private enum c_speed { };
     [SerializeField]
     private Enemy.moveSpeed c_speed;
@@ -43,17 +50,32 @@ public class AcolyteControl : MonoBehaviour
     private Enemy.moveSpeed speed;
     private Enemy test;
 
+
     void Start()
     {
-        enemy = new Acolyte();
+        EnemySetup();
         sr = GetComponent<SpriteRenderer>();
-        enemy.cRed = new Color(250f, 0f, 0f);
-        enemy.cGrey = new Color(0f, 0f, 150f);
-        enemy.healthSystem = new HealthSystem(enemy.eHealth);
-        //enemy.healthBar.Setup(enemy.healthSystem);
+        acolyte.cRed = new Color(250f, 0f, 0f);
+        acolyte.cGrey = new Color(0f, 0f, 150f);
+        acolyte.healthSystem = new HealthSystem(acolyte.eHealth);
+        //acolyte.healthBar.Setup(acolyte.healthSystem);
         Hide();
         c_speed = Enemy.moveSpeed.charge;
         w_speed = Enemy.moveSpeed.walk;
+    }
+
+    void EnemySetup()
+    {
+        acolyte = new Acolyte();
+        acolyte.coolDown = 3f;
+        acolyte.attackRate = 2f;
+
+        acolyte.attackRange = 1.5f;
+        //float gameObjectWidth = GetComponent<SpriteRenderer>().bounds.size.x / 2f;
+        //float boxWidth = strike.GetComponent<SpriteRenderer>().bounds.size.x / 2f;
+        //acolyte.attackRange = (strike.transform.position.x - gameObject.transform.position.x) + boxWidth + gameObjectWidth;
+
+        
     }
 
     float getSpeed()
@@ -69,8 +91,8 @@ public class AcolyteControl : MonoBehaviour
 
     void Update()
     {
-        enemy.followTarget = player;
-        enemy.tPos = enemy.followTarget.transform.position;
+        followTarget = player;
+        acolyte.tPos = followTarget.transform.position;
 
         if (isDead())
         {
@@ -79,10 +101,12 @@ public class AcolyteControl : MonoBehaviour
 
         dX = transform.position.x - player.transform.position.x;
         dY = transform.position.y - player.transform.position.y;
+        //Debug.Log(acolyte.attackRange);
+        //Debug.Log(inRange(dX,dY));
 
         if (attackReady()) // bool coolDown > 0
         {
-            enemy.coolDown -= Time.deltaTime;
+            coolDown -= Time.deltaTime;
         }
 
         else
@@ -97,6 +121,7 @@ public class AcolyteControl : MonoBehaviour
 
         if (inRange(dX, dY))
         {
+            //Debug.Log("I'm in range");
             if (canAttack)
                 Attack();
         }
@@ -118,19 +143,23 @@ public class AcolyteControl : MonoBehaviour
     void Walk()
     {
         // enemy.tPos -> Vector 3 in enemy script
-        // enemy.followTarget.transform.position -> enemy(script).player(gameobject).position -> position of player
-        //enemy.tPos = enemy.followTarget.transform.position; // this line is fucked
+        // acolyte.followTarget.transform.position -> enemy(script).player(gameobject).position -> position of player
+        //acolyte.tPos = enemy.followTarget.transform.position; // this line is fucked
         if (!inRange(dX, dY))
         {
-            transform.position = Vector2.Lerp(transform.position, enemy.tPos, getSpeed() * Time.deltaTime);
+            // lerp gameObject position to tPos
+            transform.position = Vector2.Lerp(transform.position, acolyte.tPos, getSpeed() * Time.deltaTime);
         }
 
         else
         {
             if (canAttack)
+            {
                 isAttacking = true;
-        }
+                Debug.Log("isAttacking: " + isAttacking);
+            }
 
+        }
     }
 
     void Attack()
@@ -139,21 +168,21 @@ public class AcolyteControl : MonoBehaviour
         {
             // Charging up attack
             wait -= Time.deltaTime;
-            sr.color = enemy.cRed;
-            nextAttack = enemy.attackRate;
+            sr.color = acolyte.cRed;
+            nextAttack = acolyte.attackRate;
         }
 
         else
         {
             if (canAttack)
             {
-                //attackCheck();    // for striking enemy types
-                charge(enemy.tPos, c_speed);     // for charging enemy types
+                attackCheck();    // bar should show up
+                //charge(acolyte.tPos, c_speed);     // for charging enemy types
             }
 
-            sr.color = enemy.cGrey;
+            sr.color = acolyte.cGrey;
 
-            coolDown = enemy.attackRate;
+            coolDown = acolyte.attackRate;
         }
     }
 
@@ -163,7 +192,7 @@ public class AcolyteControl : MonoBehaviour
         if (other.gameObject.name == "Player1")
         {
             // Damage dealt by charging
-            enemy.pControl.healthSystem.Damage(25);
+            acolyte.pControl.healthSystem.Damage(25);
 
             //other.gameObject.SetActive(false);
             //reloading = true;
@@ -187,7 +216,7 @@ public class AcolyteControl : MonoBehaviour
 
     public bool inRange(float X, float Y)
     {
-        if (X * X + Y * Y < enemy.attackRange)
+        if (X * X + Y * Y < acolyte.attackRange)
         {
             return true;
         }
@@ -198,7 +227,7 @@ public class AcolyteControl : MonoBehaviour
 
     private bool isDead()
     {
-        if (enemy.healthSystem.GetHealthPercent() <= 0)
+        if (acolyte.healthSystem.GetHealthPercent() <= 0)
         {
             return true;
         }
@@ -209,7 +238,7 @@ public class AcolyteControl : MonoBehaviour
     private void attackCheck()
     {
         canAttack = false;
-        coolDown = enemy.attackRate;
+        coolDown = acolyte.attackRate;
         strike.SetActive(true);
         float playerWidth = GetComponent<SpriteRenderer>().bounds.size.x / 2f;
         float boxWidth = strike.GetComponent<SpriteRenderer>().bounds.size.x / 2f;
@@ -221,13 +250,13 @@ public class AcolyteControl : MonoBehaviour
         {
             //Debug.Log("Hit: " + distance);
             //Debug.Log("Range: " + range);
-            enemy.pControl.healthSystem.Damage(50);
-            Debug.Log("After hit: " + enemy.pControl.healthSystem.GetHealthPercent());
+            acolyte.pControl.healthSystem.Damage(50);
+            Debug.Log("After hit: " + acolyte.pControl.healthSystem.GetHealthPercent());
         }
 
         Hide();
         isAttacking = false;
-        wait = enemy.attackRate;
+        wait = acolyte.attackRate;
 
     }
 
@@ -247,12 +276,12 @@ public class AcolyteControl : MonoBehaviour
     private void charge(Vector3 chargePos, Enemy.moveSpeed speed) // charge through player
     {
         canAttack = false;
-        coolDown = enemy.attackRate;
+        coolDown = acolyte.attackRate;
         // Charging the player
         transform.position = Vector2.Lerp(transform.position, chargePos, getSpeed());
 
 
         isAttacking = false;
-        wait = enemy.attackRate;     
+        wait = acolyte.attackRate;     
     }
 }
