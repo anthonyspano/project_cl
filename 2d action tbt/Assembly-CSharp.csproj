@@ -63,20 +63,16 @@
     <Compile Include="Assets\Scripts\AcolyteControl.cs" />
     <Compile Include="Assets\Scripts\CameraController.cs" />
     <Compile Include="Assets\Scripts\ChangeLevel.cs" />
-    <Compile Include="Assets\Scripts\Enem.cs" />
+    <Compile Include="Assets\Scripts\Decommissioned\Enem.cs" />
+    <Compile Include="Assets\Scripts\Decommissioned\EnemySpawn.cs" />
     <Compile Include="Assets\Scripts\Enemy.cs" />
     <Compile Include="Assets\Scripts\EnemyController.cs" />
-    <Compile Include="Assets\Scripts\EnemyDeath.cs" />
-    <Compile Include="Assets\Scripts\EnemySpawn.cs" />
     <Compile Include="Assets\Scripts\GameHandler.cs" />
     <Compile Include="Assets\Scripts\HealthBar.cs" />
     <Compile Include="Assets\Scripts\HealthSystem.cs" />
     <Compile Include="Assets\Scripts\MainMenu.cs" />
-    <Compile Include="Assets\Scripts\Movement.cs" />
     <Compile Include="Assets\Scripts\PlayerController.cs" />
-    <Compile Include="Assets\Scripts\RayJump.cs" />
     <Compile Include="Assets\Scripts\Shoot.cs" />
-    <Compile Include="Assets\Scripts\SimpleMove.cs" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>C:/Users/Anthony/Documents/project_bloodbath/2d action tbt/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Base class for all enemies
+// Variables to be changed on a mass scale
 public class Enemy<T> where T : Enemy
 {
     public GameObject GameObject;
@@ -15,102 +16,92 @@ public class Enemy<T> where T : Enemy
     }
 }
 
+
 public abstract class Enemy : MonoBehaviour
 {
-    public enum moveSpeed { walk, charge };
-    //public moveSpeed movement;
-    public bool isMoving;
-    //public float moveSpeed;
-    public Vector3 tPos;
-    [SerializeField]
+    protected float run;
     public float wait;    // wait period before attack (turns red)
-    [SerializeField]
-    public bool isAttacking;
-    public Color cRed;
-    public Color cGrey;
-    public SpriteRenderer sr;
-    [SerializeField]
     public float coolDown;  // central timer for attack cooldown
-    public bool canAttack;
-    [SerializeField]
     public float nextAttack;   // time before enemy can attack again
-    [SerializeField]
     public float attackRate;
-    [SerializeField]
     public float attackRange;
-    public HealthBar healthBar;
-    public HealthSystem healthSystem;
-    public float dX;
-    public float dY;
-    public float distance;
-    public float range;
-    public GameObject strike;
-    public GameObject player;
-    public PlayerController pControl;
-    [SerializeField]
     public int eHealth;
-    public Vector2 chargePos;
-    private BoxCollider2D bc;
-    private Animator anim;
-    private RuntimeAnimatorController blank; // how to get animator controller ?
 
 
-    private void Awake()
-    {
-        // Instantiating all components of the game object
-        LoadSprite();
-        
-        gameObject.tag = "enemy";
-        gameObject.layer = LayerMask.NameToLayer("Characters");
-        gameObject.AddComponent<BoxCollider2D>();
-        gameObject.AddComponent<Animator>();
-        //anim.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("hood32_idle_0");  // find the controller in the asset library
-    }
+    //private void Awake()
+    //{
+    //    // Instantiating all components of the game object
+    //    LoadSprite();
 
-    private bool LoadSprite()
-    {
-        sr = gameObject.AddComponent<SpriteRenderer>();
-        sr.sprite = Resources.Load<Sprite>("Sprites/Enemies/badguy");
-        if (Resources.Load<Sprite>("Sprites/Enemies/badguy"))
-        {
-            Debug.Log("Sprite loaded successfully!");
-            return true;
-        }
-           
-        else
-        {
-            Debug.Log("Sprite load failed!");
-            return false;
-        }
-            
-    }
+    //    gameObject.tag = "enemy";
+    //    gameObject.layer = LayerMask.NameToLayer("Characters");
+    //    gameObject.GetComponent<BoxCollider2D>();
+    //    gameObject.GetComponent<Animator>();
+    //    //anim.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("hood32_idle_0");  // find the controller in the asset library
+    //}
 
-    public virtual void Initialize(Vector3 position)
-    {
-        transform.position = position;
-    }
+    //private bool LoadSprite()
+    //{
+    //    sr = gameObject.GetComponent<SpriteRenderer>();
+    //    sr.sprite = Resources.Load<Sprite>("Sprites/Enemies/badguy");
+    //    if (Resources.Load<Sprite>("Sprites/Enemies/badguy"))
+    //    {
+    //        Debug.Log("Sprite loaded successfully!");
+    //        return true;
+    //    }
 
-    protected abstract void Patrol();
+    //    else
+    //    {
+    //        Debug.Log("Sprite load failed!");
+    //        return false;
+    //    }
+
+    //}
+
+    //public virtual void Initialize(Vector3 position)
+    //{
+    //    transform.position = position;
+    //}
+
+    //protected abstract void Patrol();
 }
 
-public class Acolyte : Enemy {
-
+public class Acolyte : Enemy    // TBI
+{
     public float Cooldown
     {
         get { return coolDown; }
         set { coolDown = 3f; }
     }
-    
 
-    private void FixedUpdate()
+    public float NextAttack
     {
-        Patrol();
+        get { return nextAttack; }
+        set { nextAttack = 0.5f; }
     }
 
-    protected override void Patrol()
+    public float AttackRange
     {
-        // To be implemented...
-        
+        get { return attackRange; }
+        set { attackRange = 2f; }
+    }
+
+    public int E_Health
+    {
+        get { return eHealth; }
+        set { eHealth = 100; }
+    }
+
+    public float Wait
+    {
+        get { return wait; }
+        set { wait = 2f; }
+    }
+
+    public float Run
+    {
+        get { return run; }
+        set { run = 2f; }
     }
 
 }

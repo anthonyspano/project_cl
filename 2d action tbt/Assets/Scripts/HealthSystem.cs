@@ -17,7 +17,6 @@ public class HealthSystem
     public int GetHealth()
     {
         return health;
-
     }
 
     public float GetHealthPercent() 

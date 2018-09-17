@@ -2,203 +2,251 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Behavior script for acolyte enemies
-/* Known issues
- * Lerp accelerates enemy toward player. Find alternative.
- * Always following
- * Never in range?
- * Check all inherited values?
- * */
+// Behavior script for hooded enemies
+/* Known issues:
+ * Animate normal attack (like a stab)
+ * Raycast multiple directions
+ */
+
+// Handles actions of hooded enemy (prototype)
 public class AcolyteControl : MonoBehaviour
 {
-    private bool isMoving;
-    private bool canAttack;
-    //private Vector3 tPos;
-    public GameObject followTarget;
-    //[SerializeField]
-    private bool isAttacking;
+    public enum moveSpeed { walk, charge };
+    public bool isMoving;
+    public Vector3 tPos;
     [SerializeField]
-    private SpriteRenderer sr;
+    public float wait;    // wait period before attack (turns red)
+    [SerializeField]
+    public bool isAttacking;
+    public Color cRed;
+    public Color cGrey;
+    public SpriteRenderer sr;
     // Object-specific timers
     [SerializeField]
-    private float wait;    // wait period before attack (turns red)
+    private float coolDown;  // central timer for attack cooldown
+    public bool canAttack;
     [SerializeField]
-    private float coolDown;  // central timer for attack cooldown  
+    public float nextAttack;   // time before enemy can attack again
     [SerializeField]
-    private float nextAttack;   // time before enemy can attack again
-    //[SerializeField]
-    //private float attackRate;
-    //[SerializeField]
-    //private float attackRange;
-    //public HealthBar healthBar;
-    //public HealthSystem healthSystem;
-    private float dX;
-    private float dY;
-    private float distance;
-    private float range;
-    public GameObject strike;
+    public float attackRate;
+    [SerializeField]
+    public float attackRange;
+    public HealthBar healthBar;
+    public HealthSystem healthSystem;
+    public float dX;
+    public float dY;
+    public float distance;
+    public float range;
+    public GameObject strikeN;
+    public GameObject strikeS;
+    public GameObject strikeE;
+    public GameObject strikeW;
+    public GameObject leftBounds;
+    public GameObject rightBounds;
     public GameObject player;
-    //public PlayerController pControl;
-    //[SerializeField]
-    //private int eHealth;
-    //private Vector2 chargePos;
-    private Acolyte acolyte;
-    //private enum c_speed { };
+    public PlayerController pControl;
     [SerializeField]
-    private Enemy.moveSpeed c_speed;
-    private Enemy.moveSpeed w_speed;
-    private Enemy.moveSpeed speed;
-    private Enemy test;
+    public int eHealth;
+    public Vector2 chargePos;
+    private BoxCollider2D bc;
+    private Animator anim;
+    public GameObject followTarget;
+    [SerializeField]
+    private moveSpeed c_speed;
+    private moveSpeed w_speed;
+    private moveSpeed speed;
+    [SerializeField]
+    private float sightRange;
+    private int counter;
+    public HealthBar eHealthBar;
+    private GameObject testObject;
+    // target to lock on to
+    public GameObject targetPrefab;
+    // Charge
+    private Vector3 setPos;
+    private bool targetChosen;
+    private GameObject targetPlace;
+    public bool chargeDamage;
+    public float e_range;
 
 
     void Start()
     {
         EnemySetup();
         sr = GetComponent<SpriteRenderer>();
-        acolyte.cRed = new Color(250f, 0f, 0f);
-        acolyte.cGrey = new Color(0f, 0f, 150f);
-        acolyte.healthSystem = new HealthSystem(acolyte.eHealth);
-        //acolyte.healthBar.Setup(acolyte.healthSystem);
-        Hide();
-        c_speed = Enemy.moveSpeed.charge;
-        w_speed = Enemy.moveSpeed.walk;
+        Hide();                                     // Deactivate hitboxes, bc
+        c_speed = moveSpeed.charge;
+        w_speed = moveSpeed.walk;
     }
 
     void EnemySetup()
     {
-        acolyte = new Acolyte();
-        acolyte.coolDown = 3f;
-        acolyte.attackRate = 2f;
-
-        acolyte.attackRange = 1.5f;
+        //coolDown = 0.5f;
+        attackRate = coolDown;
+        attackRange = 2f;
+        cRed = new Color(250f, 0f, 0f);
+        cGrey = new Color(0f, 0f, 150f);
+        // Health System
+        healthSystem = new HealthSystem(eHealth);
+        eHealthBar.Setup(healthSystem);
+        Debug.Log("Enemy health: " + eHealthBar.healthSystem.GetHealth());
         //float gameObjectWidth = GetComponent<SpriteRenderer>().bounds.size.x / 2f;
         //float boxWidth = strike.GetComponent<SpriteRenderer>().bounds.size.x / 2f;
-        //acolyte.attackRange = (strike.transform.position.x - gameObject.transform.position.x) + boxWidth + gameObjectWidth;
-
-        
+        //attackRange = (strike.transform.position.x - gameObject.transform.position.x) + boxWidth + gameObjectWidth;
     }
 
     float getSpeed()
     {
         switch(speed)
         {
-            case Enemy.moveSpeed.walk: return 2;
-            case Enemy.moveSpeed.charge: return 5;
+            case moveSpeed.walk: return 2;
+            case moveSpeed.charge: return 0.5f;
         }
 
         return 0;
     }
 
+    
+
     void Update()
     {
+        // Debug.Log
+        realtimeDebug();
+        // actively set params for walk()
         followTarget = player;
-        acolyte.tPos = followTarget.transform.position;
-
+        tPos = followTarget.transform.position;
+        // despawn gameObject if health < 0
         if (isDead())
         {
             Destroy(gameObject);
         }
-
+        // Distance between enemy and player
         dX = transform.position.x - player.transform.position.x;
         dY = transform.position.y - player.transform.position.y;
-        //Debug.Log(acolyte.attackRange);
-        //Debug.Log(inRange(dX,dY));
-
-        if (attackReady()) // bool coolDown > 0
+        // bool coolDown > 0 
+        if (attackReady()) 
         {
             coolDown -= Time.deltaTime;
         }
-
         else
         {
             canAttack = true;
         }
-
+        // Primary walk trigger
         if (!isAttacking)
         {
             Walk();
         }
-
+        // Primary attack trigger
         if (inRange(dX, dY))
         {
-            //Debug.Log("I'm in range");
             if (canAttack)
-                Attack();
+            {
+                // calculating charge position
+                // need to keep charge position static as soon as enemy turns red
+                //Vector3 cPos = player.transform.position;
+                //Debug.Log("Charge position: " + cPos);
+                StartCoroutine(Attack());
+            }
         }
-
+        // If not attacking, clear decision state for reanalysis
         else
         {
-            isAttacking = false;
+            clearDecisionState();
         }
-
-        if (coolingDown()) // nextAttack > 0
+        // Cooldown in between attacks
+        if (coolingDown()) // nextAttack > 0 
         {
             nextAttack -= Time.deltaTime;
         }
-
-        
-
     }
 
     void Walk()
     {
-        // enemy.tPos -> Vector 3 in enemy script
-        // acolyte.followTarget.transform.position -> enemy(script).player(gameobject).position -> position of player
-        //acolyte.tPos = enemy.followTarget.transform.position; // this line is fucked
-        if (!inRange(dX, dY))
+        if (!inRange(dX,dY) && inSight(dX,dY))
         {
-            // lerp gameObject position to tPos
-            transform.position = Vector2.Lerp(transform.position, acolyte.tPos, getSpeed() * Time.deltaTime);
-        }
-
-        else
+            // move gameObject at a constant speed towards player
+            transform.position = Vector2.MoveTowards(transform.position, tPos, getSpeed() * Time.deltaTime);
+        }      
+        else    // trigger attack sequence (Update())
         {
             if (canAttack)
             {
                 isAttacking = true;
-                Debug.Log("isAttacking: " + isAttacking);
             }
-
         }
     }
-
-    void Attack()
+    
+    IEnumerator Attack()
     {
+        //Transform target = player.transform;
+        Vector3 target = player.transform.position;
+        //Debug.Log(player.transform.position);
+        // "charge" attack if wait > 0 and able to attack
         if (wait > 0 && canAttack && isAttacking)
         {
-            // Charging up attack
-            wait -= Time.deltaTime;
-            sr.color = acolyte.cRed;
-            nextAttack = acolyte.attackRate;
+            // Lock onto target
+            sr.color = cRed;
+            // Determine target charge location
+            setPos = LockOn(target);
+            //Debug.Log("Charge position: " + setPos);
+            yield return new WaitForSeconds(wait -= Time.deltaTime);
         }
-
         else
         {
             if (canAttack)
             {
-                attackCheck();    // bar should show up
-                //charge(acolyte.tPos, c_speed);     // for charging enemy types
+                // Determine where the player is
+                // Put boundaries on the sides that mark how to decide direction
+                if (player.transform.position.x < leftBounds.transform.position.x) // left of left boundary - attack left
+                {
+                    attackClear();
+                    RayCheck(1); // West
+                    //attackCheck(strikeW);
+                }
+
+                // right of right boundary - attack right
+                if (player.transform.position.x > rightBounds.transform.position.x)
+                {
+                    attackClear();
+                    RayCheck(2);    // East
+                    //attackCheck(strikeE);
+                }
+
+                if ((player.transform.position.x > leftBounds.transform.position.x) &&
+                    (player.transform.position.x < rightBounds.transform.position.x) &&
+                    (player.transform.position.y > gameObject.transform.position.y))     // up
+                {
+                    attackClear();
+                    RayCheck(3);    // North
+                    //attackCheck(strikeN);
+                }
+
+                if ((player.transform.position.x > leftBounds.transform.position.x) &&
+                    (player.transform.position.x < rightBounds.transform.position.x) &&
+                    (player.transform.position.y < gameObject.transform.position.y))     // down
+                {
+                    attackClear();
+                    RayCheck(4);    // South
+                    //attackCheck(strikeS);
+                }
+     
             }
-
-            sr.color = acolyte.cGrey;
-
-            coolDown = acolyte.attackRate;
-        }
+            clearDecisionState();
+        }      
     }
 
     void OnCollisionEnter2D(Collision2D other)
     {
-
         if (other.gameObject.name == "Player1")
         {
-            // Damage dealt by charging
-            acolyte.pControl.healthSystem.Damage(25);
-
+            // Damage player
+            pControl.healthSystem.Damage(25);
+            // Reload the level
             //other.gameObject.SetActive(false);
             //reloading = true;
             //StartCoroutine(LoadNewLevel());
         }
-
     }
 
     private bool attackReady()
@@ -207,7 +255,6 @@ public class AcolyteControl : MonoBehaviour
         {
             return true;
         }
-
         else
         {
             return false;
@@ -216,18 +263,17 @@ public class AcolyteControl : MonoBehaviour
 
     public bool inRange(float X, float Y)
     {
-        if (X * X + Y * Y < acolyte.attackRange)
+        if (X * X + Y * Y < attackRange)
         {
             return true;
         }
-
         else
             return false;
     }
 
     private bool isDead()
     {
-        if (acolyte.healthSystem.GetHealthPercent() <= 0)
+        if (eHealthBar.healthSystem.GetHealthPercent() <= 0)
         {
             return true;
         }
@@ -235,34 +281,23 @@ public class AcolyteControl : MonoBehaviour
             return false;
     }
 
-    private void attackCheck()
+    private void attackClear() 
     {
+        // establish attack completion
         canAttack = false;
-        coolDown = acolyte.attackRate;
-        strike.SetActive(true);
-        float playerWidth = GetComponent<SpriteRenderer>().bounds.size.x / 2f;
-        float boxWidth = strike.GetComponent<SpriteRenderer>().bounds.size.x / 2f;
-
-        range = (strike.transform.position.x - gameObject.transform.position.x) + boxWidth + playerWidth;
-        distance = player.transform.position.x - gameObject.transform.position.x;
-
-        if (distance < range)
-        {
-            //Debug.Log("Hit: " + distance);
-            //Debug.Log("Range: " + range);
-            acolyte.pControl.healthSystem.Damage(50);
-            Debug.Log("After hit: " + acolyte.pControl.healthSystem.GetHealthPercent());
-        }
-
-        Hide();
-        isAttacking = false;
-        wait = acolyte.attackRate;
-
+        coolDown = attackRate;
+        //strike.SetActive(true);   // enable hitbox method
+        //DistanceCheck(strike);
+        Hide(); // deactivate hitbox
+        clearDecisionState();
     }
 
     private void Hide()
     {
-        strike.SetActive(false);
+        strikeN.SetActive(false);
+        strikeS.SetActive(false);
+        strikeE.SetActive(false);
+        strikeW.SetActive(false);
     }
 
     private bool coolingDown()
@@ -273,15 +308,136 @@ public class AcolyteControl : MonoBehaviour
             return false;
     }
 
-    private void charge(Vector3 chargePos, Enemy.moveSpeed speed) // charge through player
+    private bool inSight(float X, float Y)
     {
-        canAttack = false;
-        coolDown = acolyte.attackRate;
-        // Charging the player
-        transform.position = Vector2.Lerp(transform.position, chargePos, getSpeed());
-
-
-        isAttacking = false;
-        wait = acolyte.attackRate;     
+        // if player distance is greater than sightRange, don't move
+        if (X < sightRange && Y < sightRange) // 6 is a good number
+            return true;
+        else
+            return false;
     }
+
+    private void realtimeDebug()
+    {
+        // State of attacking        
+        //Debug.Log("isAttacking: " + isAttacking);
+        //Debug.Log("canAttack: " + canAttack);
+
+        // Attack Range of enemy
+        //Debug.Log(attackRange);
+        //Debug.Log(inRange(dX,dY));
+        // Distance of sight before aggro
+        //Debug.Log("Is in sight: " + inSight(dX,dY));
+        //Debug.Log("(dx,dy): (" + dX + "," + dY + ")");
+    }
+
+    private void clearDecisionState()
+    {
+        // Attack()
+        nextAttack = attackRate;
+        isAttacking = false;
+        coolDown = attackRate;
+        // attackCheck()
+        wait = attackRate;
+        // Visual representation of decision state availability
+        sr.color = cGrey;
+    }
+
+    private Vector3 LockOn(Vector3 cPos)
+    {
+        if (!targetChosen)
+        {
+            // Create a placeholder for target position to charge to
+            targetPlace = Instantiate(targetPrefab, cPos, Quaternion.identity);
+            Debug.Log("Target: " + targetPlace.transform.position);
+            Debug.Log("cPos: " + cPos);
+            targetChosen = true;
+            //setPos = targetPrefab.transform.position;
+            //return targetPrefab.transform.position;
+        }
+        return targetPlace.transform.position;
+    }
+
+    private void DistanceCheck(GameObject strike)
+    {
+        float playerWidth = GetComponent<SpriteRenderer>().bounds.size.x / 2f;
+        float boxWidth = strike.GetComponent<SpriteRenderer>().bounds.size.x / 2f;
+        range = (strike.transform.position.x - gameObject.transform.position.x) + boxWidth + playerWidth;
+        distance = player.transform.position.x - gameObject.transform.position.x;
+        if (distance < range)   // assign damage
+        {
+            //Debug.Log("Hit: " + distance);
+            //Debug.Log("Range: " + range);
+            //pControl.pHealthBar.healthSystem.Damage(20);
+            //Debug.Log("Player health after hit: " + pControl.pHealthBar.healthSystem.GetHealth());
+        }
+    }
+
+    void RayCheck(int direction)
+    {
+        float minDepth = -Mathf.Infinity;
+        float maxDepth = Mathf.Infinity;
+        int layer = LayerMask.NameToLayer("Players");
+       
+
+        Debug.Log("Ray firing");
+        Debug.Log("Range: " + e_range);
+        Debug.Log(Physics2D.Raycast(new Vector2(gameObject.transform.position.x - 0.5f, gameObject.transform.position.y), new Vector2(-1, 0), e_range, LayerMask.NameToLayer("Players")).collider);
+        // Debug.Log works, incorporate in all directions
+        switch (direction)
+        {
+            case 1:     // West
+                if (Physics2D.Raycast(new Vector2(gameObject.transform.position.x - 0.5f, gameObject.transform.position.y), new Vector2(-1, 0), e_range, LayerMask.NameToLayer("Players")).collider)
+                {
+                    // Assign damage
+                    pControl.pHealthBar.healthSystem.Damage(20);
+                    Debug.Log("Player health after hit: " + pControl.pHealthBar.healthSystem.GetHealth());
+
+
+                }
+                break;
+
+            case 2:     // East
+                if (Physics2D.Raycast(new Vector2(gameObject.transform.position.x - 0.5f, gameObject.transform.position.y), new Vector2(1, 0), e_range, LayerMask.NameToLayer("Players")).collider)
+                {
+                    // Assign damage
+                    pControl.pHealthBar.healthSystem.Damage(20);
+                    Debug.Log("Player health after hit: " + pControl.pHealthBar.healthSystem.GetHealth());
+
+
+                }
+                break;
+
+            case 3:     // North
+                if (Physics2D.Raycast(new Vector2(gameObject.transform.position.x - 0.5f, gameObject.transform.position.y), new Vector2(0, 1), e_range, LayerMask.NameToLayer("Players")).collider)
+                {
+                    // Assign damage
+                    pControl.pHealthBar.healthSystem.Damage(20);
+                    Debug.Log("Player health after hit: " + pControl.pHealthBar.healthSystem.GetHealth());
+
+
+                }
+                break;
+
+            case 4:     // South
+                if (Physics2D.Raycast(new Vector2(gameObject.transform.position.x - 0.5f, gameObject.transform.position.y), new Vector2(0, -1), e_range, LayerMask.NameToLayer("Players")).collider)
+                {
+                    // Assign damage
+                    pControl.pHealthBar.healthSystem.Damage(20);
+                    Debug.Log("Player health after hit: " + pControl.pHealthBar.healthSystem.GetHealth());
+
+
+                }
+                break;
+
+
+
+
+        }
+
+    }
+
+    
+
 }
+

@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-// Handles movement of player
+// Handles actions of player
+/* Known issues:
+ * Assign damage to enemy (either here or enemy script)
+ * 
+ */
 public class PlayerController : MonoBehaviour {
 
-    // enumerate timer values???
     public float moveSpeed;
     private Vector2 vSpeed;
     private Animator anim;
@@ -25,7 +28,7 @@ public class PlayerController : MonoBehaviour {
     public Color eRed;
     private bool attackingDown;
     public Rigidbody2D rb;
-    public HealthBar healthBar;
+    public HealthBar pHealthBar;
     public HealthSystem healthSystem;
     //public EnemyController eControl;
     public AcolyteControl eControl;
@@ -39,28 +42,25 @@ public class PlayerController : MonoBehaviour {
     private float waitToReload;
     public enum moving { walk, run };
     public moving walking;
-    [SerializeField]
-    private Enemy e_class;
-    public HealthBar enemyHealth;
-    private GameObject[] enemies;
+    //private GameObject[] enemies;
     [SerializeField]
     private int boostSpeed;
+    public HealthBar eHealthBar;
 
 
     void Start () {
         //enemies = GameObject.FindGameObjectsWithTag("enemy");
-        enemy = GameObject.Find("badguy");
+        //enemy = GameObject.Find("badguy");
         attackTimer = attackRate;
         anim = GetComponent<Animator>();
         lastMove.y = -1.0f; // start player facing down
         Hide();
-        //enemy = GameObject.FindGameObjectWithTag("enemy");
-        e_sr = enemy.GetComponent<SpriteRenderer>();
+        e_sr = GetComponent<SpriteRenderer>();
         eRed = new Color(250f, 0f, 0f);
         rb = GetComponent<Rigidbody2D>();
         healthSystem = new HealthSystem(playerHP);
-        healthBar.Setup(healthSystem);
-        enemyHealth = enemy.GetComponent<HealthBar>();
+        pHealthBar.Setup(healthSystem);
+        Debug.Log("Player base health: " + pHealthBar.healthSystem.GetHealth());
     }
 
 	void Update () {
@@ -68,7 +68,6 @@ public class PlayerController : MonoBehaviour {
         canAttack();
         if (canAttack())
             Attack();
-
 
         if (reloading)  // for respawning player
         {
@@ -78,15 +77,14 @@ public class PlayerController : MonoBehaviour {
                 SceneManager.LoadScene("world_map", LoadSceneMode.Single);
             }
         }
-
-        //playerDeath();
-        
+        //playerDeath();        
 	}
+    
 
     public void Walk()
     {
-        playerMoving = false;
-
+        playerMoving = false;   // Not until key press
+        // Player inputs
         if (Input.GetAxisRaw("Horizontal") > 0.5f || Input.GetAxisRaw("Horizontal") < -0.5f)
         {
             //transform.Translate(new Vector3(Input.GetAxisRaw("Horizontal") * moveSpeed * Time.deltaTime, 0f, 0f));
@@ -94,7 +92,6 @@ public class PlayerController : MonoBehaviour {
             playerMoving = true;
             lastMove = new Vector2(Input.GetAxisRaw("Horizontal"),0f);
         }
-
         if (Input.GetAxisRaw("Vertical") > 0.5f || Input.GetAxisRaw("Vertical") < -0.5f)
         {
             //transform.Translate(new Vector3(0f, Input.GetAxisRaw("Vertical") * moveSpeed * Time.deltaTime, 0f));
@@ -102,19 +99,17 @@ public class PlayerController : MonoBehaviour {
             playerMoving = true;
             lastMove = new Vector2(0f, Input.GetAxisRaw("Vertical"));
         }
-
         if (Input.GetAxisRaw("Horizontal") < 0.5f && Input.GetAxisRaw("Horizontal") > -0.5f)
         {
             //transform.Translate(new Vector3(Input.GetAxisRaw("Horizontal") * moveSpeed * Time.deltaTime, 0f, 0f));
             rb.velocity = new Vector2(0f, rb.velocity.y);
         }
-
         if (Input.GetAxisRaw("Vertical") < 0.5f && Input.GetAxisRaw("Vertical") > -0.5f)
         {
             //transform.Translate(new Vector3(0f, Input.GetAxisRaw("Vertical") * moveSpeed * Time.deltaTime, 0f));
             rb.velocity = new Vector2(rb.velocity.x, 0f);
         }
-
+        // Animation controls
         anim.SetFloat("MoveX", Input.GetAxisRaw("Horizontal"));
         anim.SetFloat("MoveY", Input.GetAxisRaw("Vertical"));
         anim.SetBool("PlayerMoving", playerMoving);
@@ -123,16 +118,13 @@ public class PlayerController : MonoBehaviour {
     }
 
     IEnumerator AttackDir(GameObject strike)
-    {
-        
+    {       
         strike.SetActive(true);
         yield return new WaitForSeconds(0.3f);
         strike.SetActive(false);
         // TODO: implement animations for other directions
         // strike downward animation
         attackingDown = false;
-
-
     }
 
     private void Hide()
@@ -141,7 +133,6 @@ public class PlayerController : MonoBehaviour {
         strikeS.SetActive(false);
         strikeE.SetActive(false);
         strikeW.SetActive(false);
-
     }
 
     private void Attack()
@@ -153,27 +144,27 @@ public class PlayerController : MonoBehaviour {
             {
                 // Spawn hitbox
                 StartCoroutine(AttackDir(strikeW));
-                //AttackCheck(strikeW);
+                AttackCheck(strikeW);
                 // Adds dash to attack
                 AttackMotion(-1, 0);
             }
             else if (lastMove.x == 1f)
             {
                 StartCoroutine(AttackDir(strikeE));
-                //AttackCheck(strikeE);
+                AttackCheck(strikeE);
                 AttackMotion(1, 0);
             }
             else if (lastMove.y == 1f)
             {
                 StartCoroutine(AttackDir(strikeN));
-                //AttackCheck(strikeN);
+                AttackCheck(strikeN);
                 AttackMotion(0, 1);
             }
             else
             {
                 attackingDown = true;
                 StartCoroutine(AttackDir(strikeS));
-                //AttackCheck(strikeS);
+                AttackCheck(strikeS);
                 AttackMotion(0, -1);
             }
         }
@@ -192,15 +183,13 @@ public class PlayerController : MonoBehaviour {
         
         if (distance < range)
         {
-            //Debug.Log("Hit: " + distance);
-            //Debug.Log("Range: " + range);
+            Debug.Log("Hit: " + distance);
+            Debug.Log("Range: " + range);
             
-            //enemyHealth.healthSystem.Damage(20);
+            eHealthBar.healthSystem.Damage(20);
           
-            //Debug.Log("After hit: " + e_class.healthSystem.GetHealthPercent());
+            Debug.Log("After hit: " + eHealthBar.healthSystem.GetHealth());
             //Debug.Log(eControl.healthSystem.)
-
-
 
             // return all instantiated materials of enemy
             if (e_sr.color == eRed)
@@ -227,8 +216,12 @@ public class PlayerController : MonoBehaviour {
     {
         if (collision.gameObject.tag == "enemy")
         {
-            healthSystem.Damage(25);
-            Debug.Log("Health: " + healthSystem.GetHealth());
+            
+            //pHealthBar.healthSystem.Damage(25);
+            //healthSystem.Damage(25);
+            //Debug.Log("Player was hit! Health: " + pHealthBar.healthSystem.GetHealth());
+
+            
         }
     }
 
@@ -238,9 +231,6 @@ public class PlayerController : MonoBehaviour {
         int boostX = x * boostSpeed;
         int boostY = y * boostSpeed;
         rb.velocity = new Vector2(boostX, boostY);
-        
-
-
     }
 
     //private void playerDeath()

@@ -44,9 +44,15 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Hide
+    uniqueID: 3736706333
+    locked: 0
   - name: Ground
     uniqueID: 3692120075
     locked: 0
-  - name: Characters
+  - name: Players
     uniqueID: 3233459523
+    locked: 0
+  - name: Enemies
+    uniqueID: 2122681347
     locked: 0
