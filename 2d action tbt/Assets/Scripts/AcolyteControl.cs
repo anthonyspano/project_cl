@@ -14,7 +14,6 @@ public class AcolyteControl : MonoBehaviour
     public enum moveSpeed { walk, charge };
     public bool isMoving;
     public Vector3 tPos;
-    [SerializeField]
     public float wait;    // wait period before attack (turns red)
     [SerializeField]
     public bool isAttacking;
@@ -68,22 +67,35 @@ public class AcolyteControl : MonoBehaviour
     private GameObject targetPlace;
     public bool chargeDamage;
     public float e_range;
+    public Enemy _enemy;
+    private float walk;
+    // testing
+    public Acolyte _acolyte;
+    
 
 
     void Start()
     {
         EnemySetup();
         sr = GetComponent<SpriteRenderer>();
-        Hide();                                     // Deactivate hitboxes, bc
+        // deactivate attached bc, go
+        Hide();                                    
         c_speed = moveSpeed.charge;
         w_speed = moveSpeed.walk;
     }
 
     void EnemySetup()
     {
-        //coolDown = 0.5f;
-        attackRate = coolDown;
-        attackRange = 2f;
+        //wait = _enemy.wait;
+        //_acolyte = new Acolyte(5f);
+        //wait = _acolyte.GetWaitTime();
+        coolDown = _enemy.coolDown;
+        nextAttack = _enemy.nextAttack;
+        attackRange = _enemy.attackRange;
+        attackRate = _enemy.attackRate;
+        eHealth = _enemy.eHealth;
+        walk = _enemy.run;
+        //Debug.Log("Wait: " + _acolyte.GetWaitTime());
         cRed = new Color(250f, 0f, 0f);
         cGrey = new Color(0f, 0f, 150f);
         // Health System
@@ -166,7 +178,7 @@ public class AcolyteControl : MonoBehaviour
         if (!inRange(dX,dY) && inSight(dX,dY))
         {
             // move gameObject at a constant speed towards player
-            transform.position = Vector2.MoveTowards(transform.position, tPos, getSpeed() * Time.deltaTime);
+            transform.position = Vector2.MoveTowards(transform.position, tPos, walk * Time.deltaTime);
         }      
         else    // trigger attack sequence (Update())
         {

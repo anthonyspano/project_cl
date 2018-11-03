@@ -449,8 +449,8 @@ Canvas:
   m_GameObject: {fileID: 474045988}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_RenderMode: 1
+  m_Camera: {fileID: 681911931}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -737,8 +737,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -82.4}
-  m_SizeDelta: {x: 100, y: 103.1}
+  m_AnchoredPosition: {x: 0, y: -82.399994}
+  m_SizeDelta: {x: 100, y: 103.100006}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1623547037
 MonoBehaviour:
@@ -916,7 +916,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 51.4, y: 43.92}
+  m_AnchoredPosition: {x: 25.309998, y: 43.92}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2070640234
@@ -945,13 +945,15 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 0
     m_MaxSize: 102
-    m_Alignment: 0
+    m_Alignment: 1
     m_AlignByGeometry: 0
     m_RichText: 1
-    m_HorizontalOverflow: 0
+    m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Your Mom
+  m_Text: 'Project Bloodbath
+
+'
 --- !u!222 &2070640235
 CanvasRenderer:
   m_ObjectHideFlags: 0

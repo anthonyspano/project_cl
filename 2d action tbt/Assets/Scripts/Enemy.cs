@@ -4,22 +4,23 @@ using UnityEngine;
 
 // Base class for all enemies
 // Variables to be changed on a mass scale
-public class Enemy<T> where T : Enemy
-{
-    public GameObject GameObject;
-    public T ScriptComponent;
+// ????
+//public class Enemy<T> where T : Enemy
+//{
+//    public GameObject GameObject;
+//    public T ScriptComponent;
 
-    public Enemy(string name)
-    {
-        GameObject = new GameObject(name);
-        ScriptComponent = GameObject.AddComponent<T>();
-    }
-}
+//    public Enemy(string name)
+//    {
+//        GameObject = new GameObject(name);
+//        ScriptComponent = GameObject.AddComponent<T>();
+//    }
+//}
 
-
+    // abstract
 public abstract class Enemy : MonoBehaviour
 {
-    protected float run;
+    public float run;
     public float wait;    // wait period before attack (turns red)
     public float coolDown;  // central timer for attack cooldown
     public float nextAttack;   // time before enemy can attack again
@@ -27,7 +28,26 @@ public abstract class Enemy : MonoBehaviour
     public float attackRange;
     public int eHealth;
 
+    public BoxCollider2D bc;
+    public GameObject player;
 
+    protected virtual void Start()
+    {
+        bc = GetComponent<BoxCollider2D>();
+        player = GameObject.FindGameObjectWithTag("Player");
+            
+    }
+
+    private void Update()
+    {
+
+    }
+
+    protected virtual void Move(float spd)
+    {
+        transform.position = Vector2.MoveTowards(transform.position, player.transform.position, spd * Time.deltaTime);
+    }
+ 
     //private void Awake()
     //{
     //    // Instantiating all components of the game object
@@ -66,42 +86,48 @@ public abstract class Enemy : MonoBehaviour
     //protected abstract void Patrol();
 }
 
-public class Acolyte : Enemy    // TBI
-{
-    public float Cooldown
-    {
-        get { return coolDown; }
-        set { coolDown = 3f; }
-    }
+//public class Acolyte : Enemy   // TBI
+//{
+//    private float wait = 5f;
+//    public float GetWaitTime()
+//    {
+//        return wait;
+//    }
 
-    public float NextAttack
-    {
-        get { return nextAttack; }
-        set { nextAttack = 0.5f; }
-    }
+    //public float Cooldown
+    //{
+    //    get { return coolDown; }
+    //    set { coolDown = 3f; }
+    //}
 
-    public float AttackRange
-    {
-        get { return attackRange; }
-        set { attackRange = 2f; }
-    }
+    //public float NextAttack
+    //{
+    //    get { return nextAttack; }
+    //    set { nextAttack = 0.5f; }
+    //}
 
-    public int E_Health
-    {
-        get { return eHealth; }
-        set { eHealth = 100; }
-    }
+    //public float AttackRange
+    //{
+    //    get { return attackRange; }
+    //    set { attackRange = 2f; }
+    //}
 
-    public float Wait
-    {
-        get { return wait; }
-        set { wait = 2f; }
-    }
+    //public int E_Health
+    //{
+    //    get { return eHealth; }
+    //    set { eHealth = 100; }
+    //}
 
-    public float Run
-    {
-        get { return run; }
-        set { run = 2f; }
-    }
+    //public float Wait
+    //{
+    //    get { return wait; }
+    //    set { wait = 5f; }
+    //}
 
-}
+    //public float Run
+    //{
+    //    get { return run; }
+    //    set { run = 2f; }
+    //}
+
+//}

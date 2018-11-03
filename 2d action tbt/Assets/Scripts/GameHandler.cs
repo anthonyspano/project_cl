@@ -2,17 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// TODO: 
+/* Spawn lots of enemies
+ * Point system for killing
+ * 
+*/
+
 // Management of the game states and storage
 // Changing levels and saving/loading
 public class GameHandler : MonoBehaviour {
 
-    private GameObject badguy;
-    private GameObject clone;
+    public GameObject[] enemies;
+    private int enemyCount;
+    //private GameObject clone;
+    public Transform enemySpawn;
+
 
 	private void Start ()
     {
-        
-
         Spawn();
         //enemySpawn = new Transform(5, 5);
         //enemySpawn.position.x = 7f;
@@ -32,11 +39,17 @@ public class GameHandler : MonoBehaviour {
 
     private void Spawn()
     {
-        // doesn't work
-        //clone = Instantiate(badguy, enemySpawn);
-
+        // Spawn an array of enemies
+        Vector3 spawnPos = enemySpawn.position;
+        for (int i = 0; i < enemies.Length; i++)
+        {
+            spawnPos += new Vector3(4, 0, 0);
+            Debug.Log(spawnPos);
+            Instantiate(enemies[i], spawnPos, Quaternion.identity);
+        }
 
     }
-    
+
+
 }
 

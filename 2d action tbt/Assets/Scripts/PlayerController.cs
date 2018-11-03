@@ -5,11 +5,13 @@ using UnityEngine.SceneManagement;
 
 // Handles actions of player
 /* Known issues:
- * Assign damage to enemy (either here or enemy script)
+ * Implement controller
  * 
  */
 public class PlayerController : MonoBehaviour {
 
+    public float vstick;
+    public float hstick;
     public float moveSpeed;
     private Vector2 vSpeed;
     private Animator anim;
@@ -64,7 +66,12 @@ public class PlayerController : MonoBehaviour {
     }
 
 	void Update () {
-        Walk();
+        SixWalk();
+
+        vstick = Input.GetAxisRaw("Vertical");
+        hstick = Input.GetAxisRaw("Horizontal");
+
+        //Walk();
         canAttack();
         if (canAttack())
             Attack();
@@ -79,42 +86,12 @@ public class PlayerController : MonoBehaviour {
         }
         //playerDeath();        
 	}
-    
+
 
     public void Walk()
     {
-        playerMoving = false;   // Not until key press
-        // Player inputs
-        if (Input.GetAxisRaw("Horizontal") > 0.5f || Input.GetAxisRaw("Horizontal") < -0.5f)
-        {
-            //transform.Translate(new Vector3(Input.GetAxisRaw("Horizontal") * moveSpeed * Time.deltaTime, 0f, 0f));
-            rb.velocity = new Vector2(Input.GetAxisRaw("Horizontal") * moveSpeed, rb.velocity.y);
-            playerMoving = true;
-            lastMove = new Vector2(Input.GetAxisRaw("Horizontal"),0f);
-        }
-        if (Input.GetAxisRaw("Vertical") > 0.5f || Input.GetAxisRaw("Vertical") < -0.5f)
-        {
-            //transform.Translate(new Vector3(0f, Input.GetAxisRaw("Vertical") * moveSpeed * Time.deltaTime, 0f));
-            rb.velocity = new Vector2(rb.velocity.x, Input.GetAxisRaw("Vertical") * moveSpeed);
-            playerMoving = true;
-            lastMove = new Vector2(0f, Input.GetAxisRaw("Vertical"));
-        }
-        if (Input.GetAxisRaw("Horizontal") < 0.5f && Input.GetAxisRaw("Horizontal") > -0.5f)
-        {
-            //transform.Translate(new Vector3(Input.GetAxisRaw("Horizontal") * moveSpeed * Time.deltaTime, 0f, 0f));
-            rb.velocity = new Vector2(0f, rb.velocity.y);
-        }
-        if (Input.GetAxisRaw("Vertical") < 0.5f && Input.GetAxisRaw("Vertical") > -0.5f)
-        {
-            //transform.Translate(new Vector3(0f, Input.GetAxisRaw("Vertical") * moveSpeed * Time.deltaTime, 0f));
-            rb.velocity = new Vector2(rb.velocity.x, 0f);
-        }
-        // Animation controls
-        anim.SetFloat("MoveX", Input.GetAxisRaw("Horizontal"));
-        anim.SetFloat("MoveY", Input.GetAxisRaw("Vertical"));
-        anim.SetBool("PlayerMoving", playerMoving);
-        anim.SetFloat("LastMoveX", lastMove.x);
-        anim.SetFloat("LastMoveY", lastMove.y);
+        // deprecated
+        //playerMoving = false;   // Not until key press
     }
 
     IEnumerator AttackDir(GameObject strike)
@@ -231,6 +208,27 @@ public class PlayerController : MonoBehaviour {
         int boostX = x * boostSpeed;
         int boostY = y * boostSpeed;
         rb.velocity = new Vector2(boostX, boostY);
+    }
+
+    private void SixWalk()
+    {
+        // receive axis input values
+        float updown = Input.GetAxis("Vertical");
+        updown *= -1f;
+
+        Debug.Log(updown);
+
+        // rigidbody move
+        rb.velocity = new Vector2(Input.GetAxis("Horizontal") * moveSpeed, updown * moveSpeed);
+
+        // Animation controls
+        anim.SetFloat("MoveX", Input.GetAxisRaw("Horizontal"));
+        anim.SetFloat("MoveY", updown);
+        anim.SetBool("PlayerMoving", playerMoving);
+        lastMove.x = Input.GetAxisRaw("Horizontal");
+        lastMove.y = updown;
+        anim.SetFloat("LastMoveX", lastMove.x);
+        anim.SetFloat("LastMoveY", lastMove.y);
     }
 
     //private void playerDeath()

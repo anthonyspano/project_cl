@@ -25,6 +25,7 @@ GameObject:
   - component: {fileID: 212082197858444694}
   - component: {fileID: 114532513735330582}
   - component: {fileID: 114463432602092144}
+  - component: {fileID: 114292430954643480}
   m_Layer: 0
   m_Name: badguy 1
   m_TagString: enemy
@@ -234,6 +235,27 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &114292430954643480
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1230298909467838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e82156ec258fa84a8777bb56ede2459, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  run: 2
+  wait: 2
+  coolDown: 2
+  nextAttack: 2
+  attackRate: 2
+  attackRange: 2
+  eHealth: 2
+  bc: {fileID: 0}
+  tPos: {fileID: 0}
+  speed: 3
 --- !u!114 &114463432602092144
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -246,7 +268,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 1
-  followTarget: {fileID: 0}
+  followTarget: {fileID: 1806897229182554, guid: 4e655ba03a7f04d49bc0e3b39e1f5519,
+    type: 2}
   sr: {fileID: 212082197858444694}
   healthBar: {fileID: 114778617043488098}
 --- !u!114 &114491787628059526
@@ -270,15 +293,47 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1230298909467838}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0627333c7a71c6b41b8231d1861b997f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isMoving: 0
+  tPos: {x: 0, y: 0, z: 0}
+  wait: 0
+  isAttacking: 0
+  cRed: {r: 0, g: 0, b: 0, a: 0}
+  cGrey: {r: 0, g: 0, b: 0, a: 0}
   sr: {fileID: 212082197858444694}
-  strike: {fileID: 1855802573818290}
+  coolDown: 0
+  canAttack: 0
+  nextAttack: 0
+  attackRate: 0
+  attackRange: 0
+  healthBar: {fileID: 0}
+  dX: 0
+  dY: 0
+  distance: 0
+  range: 0
+  strikeN: {fileID: 0}
+  strikeS: {fileID: 0}
+  strikeE: {fileID: 0}
+  strikeW: {fileID: 0}
+  leftBounds: {fileID: 0}
+  rightBounds: {fileID: 0}
   player: {fileID: 1806897229182554, guid: 4e655ba03a7f04d49bc0e3b39e1f5519, type: 2}
+  pControl: {fileID: 0}
+  eHealth: 0
+  chargePos: {x: 0, y: 0}
+  followTarget: {fileID: 0}
   c_speed: 0
+  sightRange: 0
+  eHealthBar: {fileID: 0}
+  targetPrefab: {fileID: 0}
+  chargeDamage: 0
+  e_range: 0
+  _enemy: {fileID: 0}
+  _acolyte: {fileID: 0}
 --- !u!114 &114778617043488098
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -323,7 +378,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1061507773
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 10
   m_Sprite: {fileID: 21300000, guid: 5112fbdcd1ef6af40a1cbfd5591017df, type: 3}
   m_Color: {r: 0.6037736, g: 0.5952296, b: 0.5952296, a: 1}
@@ -368,7 +423,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -602847221
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 10
   m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   m_Color: {r: 0.9811321, g: 0, b: 0, a: 1}
@@ -413,7 +468,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1061507773
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   m_Color: {r: 1, g: 0, b: 0, a: 1}
