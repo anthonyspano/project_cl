@@ -84,6 +84,7 @@ public class PlayerController : MonoBehaviour {
                 SceneManager.LoadScene("world_map", LoadSceneMode.Single);
             }
         }
+
         //playerDeath();        
 	}
 
@@ -115,7 +116,7 @@ public class PlayerController : MonoBehaviour {
     private void Attack()
     {
         anim.SetBool("attackingDown", attackingDown);
-        if (Input.GetKeyDown(KeyCode.K))
+        if (Input.GetKeyDown(KeyCode.K) || Input.GetButton("X"))
         {
             if (lastMove.x == -1f)
             {
@@ -214,9 +215,7 @@ public class PlayerController : MonoBehaviour {
     {
         // receive axis input values
         float updown = Input.GetAxis("Vertical");
-        updown *= -1f;
-
-        Debug.Log(updown);
+        //updown *= -1f
 
         // rigidbody move
         rb.velocity = new Vector2(Input.GetAxis("Horizontal") * moveSpeed, updown * moveSpeed);
@@ -225,8 +224,13 @@ public class PlayerController : MonoBehaviour {
         anim.SetFloat("MoveX", Input.GetAxisRaw("Horizontal"));
         anim.SetFloat("MoveY", updown);
         anim.SetBool("PlayerMoving", playerMoving);
-        lastMove.x = Input.GetAxisRaw("Horizontal");
-        lastMove.y = updown;
+        
+        if (Input.GetAxisRaw("Horizontal") > 0.5f || Input.GetAxisRaw("Horizontal") < -0.5f)
+            lastMove = new Vector2(Input.GetAxisRaw("Horizontal"), 0f);
+
+        if (Input.GetAxisRaw("Vertical") > 0.5f || Input.GetAxisRaw("Vertical") < -0.5f)
+            lastMove = new Vector2(0f, Input.GetAxisRaw("Vertical"));
+        
         anim.SetFloat("LastMoveX", lastMove.x);
         anim.SetFloat("LastMoveY", lastMove.y);
     }

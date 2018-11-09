@@ -89,12 +89,12 @@ public class AcolyteControl : MonoBehaviour
         //wait = _enemy.wait;
         //_acolyte = new Acolyte(5f);
         //wait = _acolyte.GetWaitTime();
-        coolDown = _enemy.coolDown;
-        nextAttack = _enemy.nextAttack;
-        attackRange = _enemy.attackRange;
-        attackRate = _enemy.attackRate;
-        eHealth = _enemy.eHealth;
-        walk = _enemy.run;
+        //coolDown = _enemy.coolDown;
+        //nextAttack = _enemy.nextAttack;
+        //attackRange = _enemy.attackRange;
+        //attackRate = _enemy.attackRate;
+        //eHealth = _enemy.eHealth;
+        //walk = _enemy.run;
         //Debug.Log("Wait: " + _acolyte.GetWaitTime());
         cRed = new Color(250f, 0f, 0f);
         cGrey = new Color(0f, 0f, 150f);

@@ -2,6 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/* TODO: 
+ * 
+ * 
+ */
+
 // Base class for all enemies
 // Variables to be changed on a mass scale
 // ????
@@ -17,117 +22,158 @@ using UnityEngine;
 //    }
 //}
 
-    // abstract
+// abstract
 public abstract class Enemy : MonoBehaviour
 {
-    public float run;
-    public float wait;    // wait period before attack (turns red)
-    public float coolDown;  // central timer for attack cooldown
-    public float nextAttack;   // time before enemy can attack again
-    public float attackRate;
-    public float attackRange;
-    public int eHealth;
-
     public BoxCollider2D bc;
     public GameObject player;
+
+    public float dX;
+    public float dY;
+
+    private Vector3 tPos;
+    private Vector3 setPos;
+    private bool targetChosen;
+
+    // Create a class
+    private GameObject targetPlace;
+    private GameObject targetPrefab;
+
+    private SpriteRenderer sr;
 
     protected virtual void Start()
     {
         bc = GetComponent<BoxCollider2D>();
         player = GameObject.FindGameObjectWithTag("Player");
-            
+        sr = GetComponent<SpriteRenderer>();
+
+        targetPrefab = Resources.Load<GameObject>("Prefabs/SpawnPoint");
+
     }
 
     private void Update()
     {
-
+        if (CanAttack)
+            Debug.Log("ISAttacking");
     }
 
-    protected virtual void Move(float spd)
+    protected virtual void Walk()
     {
-        transform.position = Vector2.MoveTowards(transform.position, player.transform.position, spd * Time.deltaTime);
+        // move gameObject at a constant speed towards player
+        transform.position = Vector2.MoveTowards(transform.position, tPos, 3f * Time.deltaTime);
+        Debug.Log(tPos);
+        //Debug.Log("Cooldown: " + Cooldown);
     }
- 
-    //private void Awake()
-    //{
-    //    // Instantiating all components of the game object
-    //    LoadSprite();
 
-    //    gameObject.tag = "enemy";
-    //    gameObject.layer = LayerMask.NameToLayer("Characters");
-    //    gameObject.GetComponent<BoxCollider2D>();
-    //    gameObject.GetComponent<Animator>();
-    //    //anim.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("hood32_idle_0");  // find the controller in the asset library
-    //}
 
-    //private bool LoadSprite()
-    //{
-    //    sr = gameObject.GetComponent<SpriteRenderer>();
-    //    sr.sprite = Resources.Load<Sprite>("Sprites/Enemies/badguy");
-    //    if (Resources.Load<Sprite>("Sprites/Enemies/badguy"))
-    //    {
-    //        Debug.Log("Sprite loaded successfully!");
-    //        return true;
-    //    }
 
-    //    else
-    //    {
-    //        Debug.Log("Sprite load failed!");
-    //        return false;
-    //    }
+    protected void clearDecisionState()
+    {
+        // Attack()
+        NextAttack = AttackRate;
+        IsAttacking = false;
+        Cooldown = AttackRate;
+        // attackCheck()
+        Wait = AttackRate;
+        // Visual representation of decision state availability
+        //sr.color = cGrey;
+    }
 
-    //}
+    protected bool attackReady(ref float cd)
+    {
+        if (cd <= 0)
+            return true;
+        
+        else
+            return false;      
+    }
 
-    //public virtual void Initialize(Vector3 position)
-    //{
-    //    transform.position = position;
-    //}
+    protected void Delay(ref float cd)
+    {
+        cd -= Time.deltaTime;
+    }
 
-    //protected abstract void Patrol();
+    IEnumerator Attack()
+    {
+        //Debug.Log(player.transform.position);
+        // "charge" attack if wait > 0 and able to attack
+        if (Wait > 0 && CanAttack && IsAttacking)
+        {
+            // Lock onto target
+            //sr.color = cRed;
+            // Determine target charge location
+            //setPos = LockOn(tPos);
+            //Debug.Log("Charge position: " + setPos);
+            yield return new WaitForSeconds(Wait -= Time.deltaTime);
+        }
+        else
+        {
+            if (CanAttack)
+            {
+                //Attack now
+                MoveToward(ChargeSpeed);
+            }
+            //clearDecisionState();
+        }
+    }
+
+    protected Vector3 LockOn(Vector3 cPos)
+    {
+        if (!targetChosen)
+        {
+            // Create a placeholder for target position to charge to
+            targetPlace = Instantiate(targetPrefab, cPos, Quaternion.identity);
+            //Debug.Log("Target: " + targetPlace.transform.position);
+            //Debug.Log("cPos: " + cPos);
+            targetChosen = true;
+            //setPos = targetPrefab.transform.position;
+            //return targetPrefab.transform.position;
+        }
+
+        return targetPlace.transform.position;
+    }
+
+    protected virtual void MoveToward(float speed)
+    {
+        // set lock on position
+        setPos = LockOn(tPos);
+
+        // travel to location
+        transform.position = Vector2.MoveTowards(transform.position, setPos, speed * Time.deltaTime);
+
+        Debug.Log("MoveToward");
+        //Debug.Log(transform.position);
+        clearDecisionState();
+    }
+
+    protected void LocatePlayer()
+    {
+        tPos = player.transform.position;
+    }
+
+    protected float MoveSpeed { get; set; }
+
+    protected float Wait { get; set; }
+
+    protected float Cooldown { get; set; }
+
+    protected bool CanAttack { get; set; }
+
+    protected bool IsAttacking { get; set; }
+
+    protected float AttackRate { get; set; }
+
+    protected float AttackRange { get; set; }
+
+    protected float EHealth { get; set; }
+
+    protected float NextAttack { get; set; }
+
+    protected float SightRange { get; set; }
+
+    protected bool AttackNow { get; set; }
+
+    protected float ChargeSpeed { get; set; }
+
+
 }
-
-//public class Acolyte : Enemy   // TBI
-//{
-//    private float wait = 5f;
-//    public float GetWaitTime()
-//    {
-//        return wait;
-//    }
-
-    //public float Cooldown
-    //{
-    //    get { return coolDown; }
-    //    set { coolDown = 3f; }
-    //}
-
-    //public float NextAttack
-    //{
-    //    get { return nextAttack; }
-    //    set { nextAttack = 0.5f; }
-    //}
-
-    //public float AttackRange
-    //{
-    //    get { return attackRange; }
-    //    set { attackRange = 2f; }
-    //}
-
-    //public int E_Health
-    //{
-    //    get { return eHealth; }
-    //    set { eHealth = 100; }
-    //}
-
-    //public float Wait
-    //{
-    //    get { return wait; }
-    //    set { wait = 5f; }
-    //}
-
-    //public float Run
-    //{
-    //    get { return run; }
-    //    set { run = 2f; }
-    //}
-
-//}
