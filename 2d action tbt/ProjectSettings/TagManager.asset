@@ -6,7 +6,7 @@ TagManager:
   tags:
   - ground
   - attack
-  - enemy
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -50,9 +50,12 @@ TagManager:
   - name: Ground
     uniqueID: 3692120075
     locked: 0
-  - name: Players
-    uniqueID: 3233459523
+  - name: NPCs
+    uniqueID: 3086983787
     locked: 0
   - name: Enemies
     uniqueID: 2122681347
+    locked: 0
+  - name: Players
+    uniqueID: 3233459523
     locked: 0
